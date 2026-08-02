@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePayment } from '../../context/PaymentContext';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { PAYMENT_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Building,
   Copy,
@@ -52,7 +53,7 @@ export const Payment: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8 font-sans relative pb-12">
       <HeroBanner 
-        image="https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80"
+        image={PAYMENT_HERO_IMAGE}
         title="PG Accounts Payment Hub"
         subtitle="Settle hostel fee payments via bank transfer and track verification statuses"
       />
