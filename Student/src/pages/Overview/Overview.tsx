@@ -150,7 +150,7 @@ export const Overview: React.FC = () => {
     <div className="space-y-16 animate-fadeIn pb-16">
       
       {/* 1. HERO SECTION — Seamless Layout without White Card Frame */}
-      <div className="relative overflow-hidden -mt-4 mb-8">
+      <div className="relative overflow-hidden -mt-1 mb-8">
         
         {/* Soft ambient gradient accents */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
