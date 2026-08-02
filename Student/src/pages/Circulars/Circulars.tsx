@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { CIRCULARS_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Download, Eye, Calendar, Filter, Search, Share2, MessageSquare, 
   ThumbsUp, Heart, HelpCircle, CheckCircle2, FileText, Image as ImageIcon, 
@@ -404,7 +405,7 @@ export const Circulars: React.FC = () => {
 
       {/* Hero Banner */}
       <HeroBanner 
-        image="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1200&q=80"
+        image={CIRCULARS_HERO_IMAGE}
         title="Circulars & Announcement Hub"
         subtitle="Official hostel notices, exam mess schedules, security directives, and event invitations"
       />

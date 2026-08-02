@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { ATTENDANCE_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   CheckCircle, Clock, Calendar, UserCheck, ShieldCheck, MapPin, 
   QrCode, Camera, FileText, Download, CheckCircle2, Send, Smartphone
@@ -211,7 +212,7 @@ export const Attendance: React.FC = () => {
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
       <HeroBanner 
-        image="https://images.unsplash.com/photo-1484807352052-23338990c6c6?auto=format&fit=crop&w=1200&q=80"
+        image={ATTENDANCE_HERO_IMAGE}
         title="Night Roll-Call & Outpass Portal"
         subtitle="GPS Geofence, QR room verification, late-night gate passes & parent SMS logs"
       />
