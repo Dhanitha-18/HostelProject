@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { MESS_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Coffee, Sun, Clock, Moon, Star, ShoppingBag, 
   Utensils, CheckCircle2, Flame,
@@ -42,7 +43,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Crispy Samosa / French Fries with Chutney',
       desc: 'Freshly fried potato samosa / peri peri fries served with sweet tomato sauce dip and hot Tea/Coffee/Milk.',
       img: '/menu_photos/menu_photo_02.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 310,
       protein: '5g',
       rating: 4.7,
@@ -77,7 +78,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Hot Maggi Noodles with Sauce',
       desc: 'Freshly prepared masala noodles with veggies & herbs, served alongside hot Tea, Coffee, and Milk.',
       img: '/menu_photos/menu_photo_05.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 280,
       protein: '6g',
       rating: 4.9,
@@ -112,7 +113,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Pani Puri with Mashed Aloo & Tangy Water',
       desc: 'Street style crispy puris filled with spiced potato mash, sweet tamarind chutney, spicy mint water & boondi.',
       img: '/menu_photos/menu_photo_08.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 260,
       protein: '5g',
       rating: 4.9,
@@ -147,7 +148,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Mumbai Vadapav with Fried Chili',
       desc: 'Crispy spiced potato vada inside soft bun slider with dry garlic chutney, fried green chili and hot Tea/Coffee.',
       img: '/menu_photos/menu_photo_11.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 320,
       protein: '7g',
       rating: 4.8,
@@ -182,7 +183,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Crispy Onion Pakoda / Sweet Corn',
       desc: 'Golden crispy deep fried onion pakodas or warm buttered sweet corn cups with Tea, Coffee & Milk.',
       img: '/menu_photos/menu_photo_14.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 290,
       protein: '6g',
       rating: 4.7,
@@ -228,7 +229,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Cream Biscuits (Oreo/Bourbon) & Hot Tea/Coffee',
       desc: 'Assorted chocolate cream biscuits served with hot Tea, Coffee, and Milk.',
       img: '/menu_photos/menu_photo_18.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 250,
       protein: '4g',
       rating: 4.5,
@@ -274,7 +275,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       name: 'Fresh Seasonal Fruit Platter & Hot Tea',
       desc: 'Freshly sliced seasonal fruits (banana/apple/papaya) served with hot Tea, Coffee, and Milk.',
       img: '/menu_photos/menu_photo_22.jpg',
-      time: '4:30 PM - 5:30 PM',
+      time: '5:00 PM - 6:00 PM',
       calories: 210,
       protein: '3g',
       rating: 4.6,
@@ -282,7 +283,7 @@ const WEEKLY_MENU: Record<string, DayMenu> = {
       allergens: []
     },
     Dinner: {
-      name: 'Chicken Biryani, Kebab & Paneer Gravy',
+      name: 'Hyderabadi Chicken Biryani, Kebab & Paneer Gravy',
       desc: 'Grand Sunday Feast! Fragrant chicken biryani with chicken kebab (or Veg Biryani with Paneer gravy) & raitha.',
       img: '/menu_photos/menu_photo_23.jpg',
       time: '7:30 PM - 9:00 PM',
@@ -444,7 +445,7 @@ export const Mess: React.FC = () => {
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
       <HeroBanner 
-        image="https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=500&q=80"
+        image={MESS_HERO_IMAGE}
         title="Mess & Dining Portal"
         subtitle="Hygienic, nutritionally balanced food menu & guest dining management"
       />
@@ -503,8 +504,24 @@ export const Mess: React.FC = () => {
             >
               Weekly Schedule
             </button>
+            <button
+              onClick={() => setViewMode('nutrition')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'nutrition' ? 'bg-white text-primary shadow-sm' : 'text-text-muted hover:text-slate-800'
+              }`}
+            >
+              Nutrition Tracker
+            </button>
           </div>
 
+        </div>
+
+        {/* Daily Summary Bar */}
+        <div className="flex flex-wrap items-center justify-end border-t border-slate-100 pt-3 gap-2 text-xs font-semibold">
+          <div className="text-[10px] text-text-muted font-bold flex items-center gap-3">
+            <span>Daily Intake Est: <strong className="text-slate-800 font-mono text-xs">{totalCal} kcal</strong></span>
+            <span>Est Protein: <strong className="text-primary font-mono text-xs">{totalProt}g</strong></span>
+          </div>
         </div>
 
       </div>
@@ -551,6 +568,11 @@ export const Mess: React.FC = () => {
                       <MealIcon className="w-3.5 h-3.5 text-warning" />
                       {key}
                     </div>
+
+                    <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-0.5 rounded text-[9px] font-black tracking-wider flex items-center gap-1 shadow">
+                      <Flame className="w-3 h-3 text-danger" />
+                      {data.calories} kcal
+                    </div>
                   </div>
 
                   <div className="p-5 flex flex-col justify-between flex-grow space-y-3">
@@ -562,6 +584,19 @@ export const Mess: React.FC = () => {
                       <p className="text-[11px] text-text-muted leading-relaxed font-semibold">{data.desc}</p>
                     </div>
 
+                    {/* Allergens & Tags */}
+                    <div className="flex flex-wrap items-center gap-1.5 text-[9.5px]">
+                      <span className="font-bold text-text-muted">Contains:</span>
+                      {data.allergens.map(alg => (
+                        <span key={alg} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono font-medium">
+                          {alg}
+                        </span>
+                      ))}
+                      <span className="ml-auto font-mono font-bold text-primary bg-primary/5 px-2 py-0.5 rounded">
+                        Prot: {data.protein}
+                      </span>
+                    </div>
+
                     {/* Footer Actions */}
                     <div className="flex items-center justify-between border-t border-slate-100 pt-3 gap-2">
                       <div className="flex items-center gap-1 text-[10px] text-text-muted font-bold">
@@ -569,16 +604,27 @@ export const Mess: React.FC = () => {
                         <span>{data.time}</span>
                       </div>
 
-                      <button
-                        onClick={() => handleToggleOptOut(optKey)}
-                        className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${
-                          isOptedOut 
-                            ? 'bg-success text-white border-success' 
-                            : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
-                        }`}
-                      >
-                        {isOptedOut ? 'Opted Out (+20 Pts)' : 'Skip Meal'}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setRatingMeal({ title: data.name, day: activeDay })}
+                          className="text-[10px] font-bold text-warning hover:text-warning/80 bg-warning/10 px-2 py-1 rounded-lg flex items-center gap-1 transition-colors"
+                        >
+                          <Star className="w-3 h-3 fill-warning" />
+                          <span>{data.rating}</span>
+                          <span className="text-text-muted font-normal">({data.ratingCount})</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleToggleOptOut(optKey)}
+                          className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${
+                            isOptedOut 
+                              ? 'bg-success text-white border-success' 
+                              : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
+                          }`}
+                        >
+                          {isOptedOut ? 'Opted Out (+20 Pts)' : 'Skip Meal'}
+                        </button>
+                      </div>
                     </div>
 
                   </div>
@@ -627,7 +673,7 @@ export const Mess: React.FC = () => {
                 <th className="p-3.5 rounded-tl-xl">Day</th>
                 <th className="p-3.5">Breakfast (7:30 AM)</th>
                 <th className="p-3.5">Lunch (12:30 PM)</th>
-                <th className="p-3.5">Snacks (4:30 PM)</th>
+                <th className="p-3.5">Snacks (5:00 PM)</th>
                 <th className="p-3.5 rounded-tr-xl">Dinner (7:30 PM)</th>
               </tr>
             </thead>
@@ -646,10 +692,14 @@ export const Mess: React.FC = () => {
                     <td className="p-3.5 font-black text-slate-900 border-r border-border">{d}</td>
                     <td className="p-3.5 border-r border-border">
                       <div className="font-bold text-slate-800">{menu.Breakfast.name}</div>
+                      <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Breakfast.calories} kcal • {menu.Breakfast.protein}</div>
                     </td>
                     <td className="p-3.5 border-r border-border">
                       {menu.Lunch ? (
-                        <div className="font-bold text-slate-800">{menu.Lunch.name}</div>
+                        <>
+                          <div className="font-bold text-slate-800">{menu.Lunch.name}</div>
+                          <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Lunch.calories} kcal • {menu.Lunch.protein}</div>
+                        </>
                       ) : (
                         <span className="text-[10px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded-md inline-block">
                           Provided in College Mess
@@ -658,9 +708,11 @@ export const Mess: React.FC = () => {
                     </td>
                     <td className="p-3.5 border-r border-border">
                       <div className="font-bold text-slate-800">{menu.Snacks.name}</div>
+                      <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Snacks.calories} kcal • {menu.Snacks.protein}</div>
                     </td>
                     <td className="p-3.5">
                       <div className="font-bold text-slate-800">{menu.Dinner.name}</div>
+                      <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Dinner.calories} kcal • {menu.Dinner.protein}</div>
                     </td>
                   </tr>
                 );

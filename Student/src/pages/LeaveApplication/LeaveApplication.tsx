@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { usePayment } from '../../context/PaymentContext';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { LEAVE_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Calendar as CalendarIcon, Clock, CheckCircle2, AlertCircle, LogOut, 
   FileText, Upload, Trash2, ArrowLeft, ArrowRight, QrCode, X, 
@@ -451,7 +452,7 @@ export const LeaveApplication: React.FC = () => {
 
       {/* Hero Banner */}
       <HeroBanner 
-        image="/facilities/hero2.png"
+        image={LEAVE_HERO_IMAGE}
         title="Hostel Leave & Checkout Portal"
         subtitle="Submit outpass applications, track warden approvals, view QR return passes, and manage permanent exit clearances"
       />

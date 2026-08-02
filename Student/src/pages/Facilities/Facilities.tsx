@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { FACILITIES_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Wifi, 
   WashingMachine,
@@ -41,10 +42,10 @@ const PG_FACILITIES = [
     image: "/facilities/power.jpeg"
   },
   { 
-    name: 'CCTV Security', 
-    desc: 'Round-the-clock CCTV surveillance on main entry gates and corridors.', 
+    name: 'Biometric Security', 
+    desc: 'Secure biometric fingerprint access points on main entry gates.', 
     icon: LucideCylinder,
-    image: "/facilities/cctv.jpeg"
+    image: "/facilities/tanker.jpeg"
   },
   { 
     name: 'CCTV Surveillance', 
@@ -92,55 +93,11 @@ const PG_FACILITIES = [
 
 export const Facilities: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<string[] | null>(null);
-  const [facilities, setFacilities] = useState<any[]>(PG_FACILITIES);
-  const [isLoading, setIsLoading] = useState(true);
-
-  React.useEffect(() => {
-    const getIconForTitle = (title: string) => {
-      const t = title.toLowerCase();
-      if (t.includes('wi-fi')) return Wifi;
-      if (t.includes('laundry')) return WashingMachine;
-      if (t.includes('ro') || t.includes('water')) return LucideFilter;
-      if (t.includes('power')) return Power;
-      if (t.includes('security')) return LucideCylinder;
-      if (t.includes('surveillance')) return CctvIcon;
-      if (t.includes('parking')) return SportShoe;
-      if (t.includes('housekeeping')) return BrushCleaningIcon;
-      if (t.includes('games')) return FireExtinguisher;
-      if (t.includes('study')) return ShirtIcon;
-      if (t.includes('hot water')) return BathIcon;
-      if (t.includes('lift')) return ArrowUpDownIcon;
-      return Wifi;
-    };
-
-    const fetchFacilities = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/facilities');
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const dynamicFacilities = data.map((d: any) => ({
-              name: d.title,
-              desc: d.description,
-              icon: getIconForTitle(d.title),
-              image: d.imageUrl || "/facilities/fac2.jpeg"
-            }));
-            setFacilities(dynamicFacilities);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchFacilities();
-  }, []);
 
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
       <HeroBanner 
-        image= "/facilities/fac2.jpeg"
+        image={FACILITIES_HERO_IMAGE}
         title="Hostel Facilities & Services"
         subtitle="Modern student living with premium off-campus PG convenience"
       />
@@ -154,9 +111,9 @@ export const Facilities: React.FC = () => {
 
         {/* 3 columns in a row to look big */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {facilities.map((facility, idx) => (
+          {PG_FACILITIES.map(facility => (
             <div 
-              key={idx} 
+              key={facility.name} 
               onClick={() => setSelectedImages([facility.image])}
               className="relative aspect-[3.2/3.3] rounded-2xl overflow-hidden shadow-soft border border-border group cursor-pointer"
             >
@@ -172,23 +129,13 @@ export const Facilities: React.FC = () => {
                 <facility.icon className="w-4 h-4 shrink-0" />
               </div>
 
-              {/* Permanent Bottom Title Bar so all items & names are ALWAYS visible */}
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-900/70 to-transparent p-4 flex flex-col justify-end z-10">
-                <h4 className="text-xs font-black tracking-wide uppercase text-white drop-shadow-sm">
-                  {facility.name}
-                </h4>
-                <p className="text-[11px] text-slate-200 font-semibold line-clamp-1 mt-0.5 opacity-90">
-                  {facility.desc}
-                </p>
-              </div>
-
-              {/* Cursor Pop-up Overlay for Full View */}
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex flex-col justify-end p-5 transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 z-20">
+              {/* Cursor Pop-up Overlay (name and description pop up on hover) */}
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex flex-col justify-end p-5 transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0">
                 <div className="text-white space-y-1">
                   <h4 className="text-sm font-black tracking-wide uppercase text-primary-light">
                     {facility.name}
                   </h4>
-                  <p className="text-xs text-slate-200 font-semibold leading-relaxed line-clamp-3">
+                  <p className="text-xs text-slate-200 font-semibold leading-relaxed">
                     {facility.desc}
                   </p>
                   <span className="text-[10px] text-slate-400 font-bold block pt-1.5 uppercase tracking-wider">

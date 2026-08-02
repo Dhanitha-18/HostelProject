@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { COMPLAINTS_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Send, ThumbsUp, CheckCircle, Clock, Filter, Search, 
   PhoneCall, ShieldAlert, FileText, ChevronRight, CheckCircle2
@@ -284,7 +285,7 @@ export const Complaints: React.FC = () => {
   return (
     <div className="space-y-8 animate-fadeIn pb-12">
       <HeroBanner 
-        image="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80"
+        image={COMPLAINTS_HERO_IMAGE}
         title="Grievance & Maintenance Redressal"
         subtitle="Report room repairs, Wi-Fi outages & track technician resolution timeline"
       />
