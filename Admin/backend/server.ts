@@ -1111,12 +1111,14 @@ app.put('/api/applications/batch-status', async (req, res) => {
 // Dashboard Stats
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
-    const [pending, approved, hold, rejected, allocated] = await Promise.all([
+    const [pending, approved, hold, rejected, allocated, paymentPending, paymentCompleted] = await Promise.all([
       prisma.application.count({ where: { status: 'PENDING' } }),
       prisma.application.count({ where: { status: 'APPROVED' } }),
       prisma.application.count({ where: { status: 'HOLD' } }),
       prisma.application.count({ where: { status: 'REJECTED' } }),
-      prisma.application.count({ where: { status: 'ALLOCATED' } })
+      prisma.application.count({ where: { status: 'ALLOCATED' } }),
+      prisma.payment.count({ where: { status: 'PENDING_REVIEW' } }),
+      prisma.payment.count({ where: { status: 'APPROVED' } })
     ]);
 
     const allBeds = await prisma.bed.count();
@@ -1143,6 +1145,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
 
 res.json({
   applications: { pending, approved, hold, rejected, allocated },
+  payments: { pending: paymentPending, completed: paymentCompleted },
   beds: { all: allBeds, occupied: occupiedBeds, available: availableBeds },
   occupancyPercentage,
   maleOccupancy,
