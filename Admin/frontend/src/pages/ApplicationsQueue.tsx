@@ -440,23 +440,7 @@ export default function ApplicationsQueue() {
           </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 items-center">
-            <button 
-              onClick={() => {
-                if(confirm('Are you sure you want to transfer all remaining unallocated applications to the secondary admin?')) {
-                  transferMutation.mutate();
-                }
-              }}
-              disabled={transferMutation.isPending}
-              className="bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm flex items-center space-x-2 text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors ml-2"
-              title="Transfer all unallocated students to secondary administration"
-            >
-              {transferMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
-              <span>Transfer</span>
-            </button>
-
-
-          </div>
+          <div className="flex flex-wrap gap-2 items-center">          </div>
         </div>
       </div>
 
@@ -476,17 +460,6 @@ export default function ApplicationsQueue() {
               </Button>
               {activeView === 'PENDING' ? (
                 <>
-                  <Button 
-                    variant="outline" 
-                    className="rounded-full bg-white border-orange-200 text-orange-600 hover:bg-orange-50 font-bold" 
-                    onClick={() => {
-                      if(confirm(`Are you sure you want to transfer these ${selectedIds.length} applicants?`)) {
-                        mutation.mutate({ ids: selectedIds, status: 'TRANSFERRED' });
-                      }
-                    }}
-                  >
-                    Transfer Selected
-                  </Button>
                   <Button className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-bold shadow-md shadow-indigo-500/20" onClick={() => setIsBatchModalOpen(true)}>
                     Allocate Selected
                   </Button>

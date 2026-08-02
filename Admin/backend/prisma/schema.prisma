@@ -22,6 +22,16 @@ model Application {
   email           String
   category        String?
   hostelPref      String
+  quota           String?
+  rank            String?
+  bloodGroup      String?
+  nationality     String?
+  religion        String?
+  aadhaar         String?
+  fatherOcc       String?
+  motherOcc       String?
+  allergies       String?
+  medication      String?
   medicalInfo     String?
   emergencyContact String
   remarks         String?

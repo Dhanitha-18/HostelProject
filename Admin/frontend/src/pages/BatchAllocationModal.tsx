@@ -18,7 +18,7 @@ interface BatchAllocationModalProps {
 export default function BatchAllocationModal({ isOpen, onClose, selectedIds, gender, onSuccess }: BatchAllocationModalProps) {
   const [blockId, setBlockId] = useState<string>('');
   const [floor, setFloor] = useState<string>('');
-  const [roomType, setRoomType] = useState<string>('MATCH_PREFERENCE');
+  const [roomType, setRoomType] = useState<string>('ANY');
 
   const { data: blocks = [], isLoading } = useQuery({
     queryKey: ['blocks'],
@@ -100,21 +100,7 @@ export default function BatchAllocationModal({ isOpen, onClose, selectedIds, gen
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid gap-2">
-              <Label>Room Type</Label>
-              <Select value={roomType} onValueChange={setRoomType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select room type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="MATCH_PREFERENCE">Match Student Preference</SelectItem>
-                  <SelectItem value="ANY">Any Room Type (Ignore Preference)</SelectItem>
-                  <SelectItem value="2 Sharing">Force 2 Sharing</SelectItem>
-                  <SelectItem value="3 Sharing">Force 3 Sharing</SelectItem>
-                  <SelectItem value="4 Sharing">Force 4 Sharing</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
           </div>
         )}
         

@@ -201,7 +201,17 @@ app.post('/api/applications', async (req, res) => {
     motherName: data.motherName || null,
     motherPhone: data.motherPhone || null,
     guardianName: data.guardianName || null,
-    guardianPhone: data.guardianPhone || null
+    guardianPhone: data.guardianPhone || null,
+    quota: data.quota || null,
+    rank: data.rank || null,
+    bloodGroup: data.bloodGroup || null,
+    nationality: data.nationality || null,
+    religion: data.religion || null,
+    aadhaar: data.aadhaar || null,
+    fatherOcc: data.fatherOcc || null,
+    motherOcc: data.motherOcc || null,
+    allergies: data.allergies || null,
+    medication: data.medication || null
   }
 });
 
