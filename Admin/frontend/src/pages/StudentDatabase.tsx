@@ -126,11 +126,12 @@ export default function StudentDatabase() {
     const headers = [
       'App ID', 'Student Name', 'USN', 'BMSIT ID', 'Gender', 'Branch', 'Sem', 'DOB', 
       'Phone', 'Email', 'Address', 
-      'Father Name', 'Father Phone', 'Father Email', 
-      'Mother Name', 'Mother Phone', 'Mother Email', 
+      'Quota', 'Rank', 'Blood Group', 'Nationality', 'Religion', 'Aadhaar',
+      'Father Name', 'Father Phone', 'Father Email', 'Father Occupation',
+      'Mother Name', 'Mother Phone', 'Mother Email', 'Mother Occupation',
       'Guardian Name', 'Guardian Phone', 'Guardian Email', 
       'Emergency Contact', 'Category', 'Hostel Pref', 
-      'Medical Info', 'Remarks', 'Status', 'Hold Reason', 'Applied At', 
+      'Medical Info', 'Allergies', 'Medication', 'Remarks', 'Status', 'Hold Reason', 'Applied At', 
       'Allocated Block', 'Allocated Room', 'Allocated Bed',
       'UTR Number', 'Payment Date', 'Payment Status'
     ];
@@ -153,12 +154,20 @@ export default function StudentDatabase() {
         app.phoneNumber,
         app.email,
         app.address || '',
+        app.quota || '',
+        app.rank || '',
+        app.bloodGroup || '',
+        app.nationality || '',
+        app.religion || '',
+        app.aadhaar || '',
         app.fatherName,
         app.fatherPhone,
         app.fatherEmail || '',
+        app.fatherOcc || '',
         app.motherName || '',
         app.motherPhone || '',
         app.motherEmail || '',
+        app.motherOcc || '',
         app.guardianName || '',
         app.guardianPhone || '',
         app.guardianEmail || '',
@@ -166,6 +175,8 @@ export default function StudentDatabase() {
         app.category || '',
         app.hostelPref,
         app.medicalInfo || '',
+        app.allergies || '',
+        app.medication || '',
         app.remarks || '',
         app.status,
         app.holdReason || '',
@@ -329,17 +340,27 @@ export default function StudentDatabase() {
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Category</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Applied At</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Address</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Quota</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Rank</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Blood Group</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Nationality</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Religion</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Aadhaar</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Father's Name</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Father's Phone</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Father's Email</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Father's Occ</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Mother's Name</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Mother's Phone</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Mother's Email</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Mother's Occ</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Guardian's Name</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Guardian's Phone</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Guardian's Email</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Emergency Contact</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Medical Info</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Allergies</th>
+                  <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Medication</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Remarks</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider border-r border-indigo-200/50">Hold Reason</th>
                   <th className="p-3 text-[10px] font-black text-indigo-900 uppercase tracking-wider">App ID</th>
@@ -400,17 +421,27 @@ export default function StudentDatabase() {
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.category || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{new Date(app.appliedAt || app.createdAt).toLocaleString()}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100 max-w-[200px] truncate" title={app.address}>{app.address}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.quota || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.rank || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.bloodGroup || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.nationality || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.religion || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.aadhaar || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.fatherName}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.fatherPhone}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.fatherEmail || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.fatherOcc || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.motherName || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.motherPhone || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.motherEmail || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.motherOcc || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.guardianName || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.guardianPhone || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.guardianEmail || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.emergencyContact || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100 max-w-[200px] truncate" title={app.medicalInfo}>{app.medicalInfo || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100 max-w-[200px] truncate" title={app.allergies}>{app.allergies || '-'}</td>
+                        <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100 max-w-[200px] truncate" title={app.medication}>{app.medication || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100 max-w-[200px] truncate" title={app.remarks}>{app.remarks || '-'}</td>
                         <td className="p-3 text-sm font-semibold text-slate-600 border-r border-slate-100">{app.holdReason || '-'}</td>
                         <td className="p-3 text-xs font-mono font-medium text-slate-400 border-r border-slate-100">
@@ -425,7 +456,7 @@ export default function StudentDatabase() {
                             exit={{ opacity: 0, height: 0 }}
                             className="bg-slate-50/80 border-b border-slate-200 shadow-inner overflow-hidden"
                           >
-                            <td colSpan={33} className="p-0">
+                            <td colSpan={43} className="p-0">
                               <div className="p-6">
                                 <h4 className="text-lg font-black text-slate-800 mb-4 border-b border-slate-200 pb-2">Full Application Details</h4>
                                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -481,6 +512,30 @@ export default function StudentDatabase() {
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.phoneNumber)}</p>
                                         </div>
                                         <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Aadhaar Number</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.aadhaar)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Quota</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.quota)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Entrance Rank</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.rank)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Blood Group</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.bloodGroup)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Nationality</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.nationality)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Religion</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.religion)}</p>
+                                        </div>
+                                        <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Gender</p>
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.gender)}</p>
                                         </div>
@@ -520,6 +575,10 @@ export default function StudentDatabase() {
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.fatherEmail)}</p>
                                         </div>
                                         <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Father Occupation</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.fatherOcc)}</p>
+                                        </div>
+                                        <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Mother Name</p>
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.motherName)}</p>
                                         </div>
@@ -530,6 +589,10 @@ export default function StudentDatabase() {
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Mother Email</p>
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.motherEmail)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Mother Occupation</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.motherOcc)}</p>
                                         </div>
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Guardian Name</p>
@@ -561,6 +624,14 @@ export default function StudentDatabase() {
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Medical Information</p>
                                           <p className="text-sm font-semibold text-slate-800 whitespace-normal">{displayVal(app.medicalInfo)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Allergies</p>
+                                          <p className="text-sm font-semibold text-slate-800 whitespace-normal">{displayVal(app.allergies)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Medication</p>
+                                          <p className="text-sm font-semibold text-slate-800 whitespace-normal">{displayVal(app.medication)}</p>
                                         </div>
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Remarks</p>

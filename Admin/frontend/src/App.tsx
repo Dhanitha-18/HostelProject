@@ -175,7 +175,11 @@ function Sidebar() {
 function RouteGuard({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) {
   const { role } = useAuthStore();
   if (!allowedRoles.includes(role)) {
+<<<<<<< HEAD
     return <Navigate to='/' replace />;
+=======
+    return <Navigate to={role === 'CHIEF' ? '/' : '/database'} replace />;
+>>>>>>> 5243f0b75e98232ebc4ea3bb182e6cc51a5d6396
   }
   return <>{children}</>;
 }

@@ -4,10 +4,19 @@ import { FEEDBACK_HERO_IMAGE } from '../../assets/heroBanners';
 import { CheckCircle2, Lock, Calendar, RefreshCw } from 'lucide-react';
 
 export const Feedback: React.FC = () => {
-  // Selected feedback period (default to June 2026 which opened July 1st)
+  const { student } = usePayment();
   const [selectedMonthKey, setSelectedMonthKey] = useState<'june_2026' | 'july_2026'>('june_2026');
 
-  // Track submission status per month with persistence
+  // Fetch categories from backend
+  const { data: categories = [] } = useQuery({
+    queryKey: ['feedbackCategories'],
+    queryFn: async () => {
+      const res = await fetch('http://localhost:5000/api/feedback-categories');
+      if (!res.ok) throw new Error('Failed to fetch');
+      return res.json();
+    }
+  });
+
   const [submittedMonths, setSubmittedMonths] = useState<{ [key: string]: boolean }>(() => {
     try {
       const saved = localStorage.getItem('hostel_student_feedback_submissions');
@@ -84,7 +93,6 @@ export const Feedback: React.FC = () => {
         subtitle="Your feedback helps us improve hostel facilities, dining quality, and maintenance services."
       />
 
-      {/* Success Toast Notification */}
       {isSuccessToast && (
         <div className="bg-emerald-600 text-white p-4 rounded-xl shadow-lg flex items-center justify-between animate-fadeIn">
           <div className="flex items-center gap-2">
@@ -95,7 +103,6 @@ export const Feedback: React.FC = () => {
         </div>
       )}
 
-      {/* Month Selector / Cycle Switcher Bar */}
       <div className="bg-white border border-border p-4 rounded-2xl shadow-soft flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-primary" />
@@ -131,7 +138,6 @@ export const Feedback: React.FC = () => {
         </div>
       </div>
 
-      {/* Student Dashboard Professional Status Card */}
       <div className="bg-white border border-border p-6 rounded-2xl shadow-soft space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">
@@ -154,7 +160,7 @@ export const Feedback: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-1">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Availability</span>
-            <span className={`text-xs font-black ${currentPeriod.isOpen ? 'text-emerald-600' : 'text-amber-600'}`}>
+            <span className={`text-xs font-black \${currentPeriod.isOpen ? 'text-emerald-600' : 'text-amber-600'}`}>
               {currentPeriod.isOpen ? 'Open' : 'Locked'}
             </span>
           </div>
@@ -166,16 +172,13 @@ export const Feedback: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-1">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Status</span>
-            <span className={`text-xs font-black ${isSubmitted ? 'text-emerald-600' : 'text-amber-600'}`}>
+            <span className={`text-xs font-black \${isSubmitted ? 'text-emerald-600' : 'text-amber-600'}`}>
               {isSubmitted ? 'Submitted ✓' : 'Not Submitted'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* MAIN CONTENT REGION */}
-
-      {/* CASE 1: Period is NOT YET OPEN */}
       {!currentPeriod.isOpen && (
         <div className="bg-white border border-border p-8 sm:p-12 text-center rounded-2xl shadow-soft space-y-6 max-w-2xl mx-auto">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
@@ -198,7 +201,6 @@ export const Feedback: React.FC = () => {
         </div>
       )}
 
-      {/* CASE 2: Period IS OPEN & Already Submitted */}
       {currentPeriod.isOpen && isSubmitted && (
         <div className="bg-white border border-emerald-200 p-8 sm:p-10 text-center rounded-2xl shadow-soft space-y-6 max-w-2xl mx-auto animate-fadeIn">
           <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">

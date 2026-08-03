@@ -179,6 +179,16 @@ export const ApplicationForm: React.FC = () => {
         medicalInfo: healthIssues,
         remarks: "",
         passportPhoto: uploadedPhotoUrl || null,
+        quota: quota,
+        rank: rank,
+        bloodGroup: bloodGroup,
+        nationality: nationality,
+        religion: religion,
+        aadhaar: aadhaar,
+        fatherOcc: fatherOcc,
+        motherOcc: motherOcc,
+        allergies: allergies,
+        medication: medication
       });
 
       // Login student using exact name and phone number credentials
