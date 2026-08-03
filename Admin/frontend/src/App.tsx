@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } f
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApplicationsQueue from './pages/ApplicationsQueue';
-import TransferredQueue from './pages/TransferredQueue';
 import DashboardStats from './pages/DashboardStats';
 import BlockOverview from './pages/BlockOverview';
 import RoomOccupancy from './pages/RoomOccupancy';
@@ -82,7 +81,6 @@ function Sidebar() {
   const allNavItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard, roles: ['CHIEF', 'OVERFLOW'] },
     { name: 'Applications Queue', path: '/applications', icon: ClipboardList, roles: ['CHIEF', 'OVERFLOW'] },
-    { name: 'Transferred Queue', path: '/transferred', icon: Users, roles: ['CHIEF', 'OVERFLOW'] },
     { name: 'Student Database', path: '/database', icon: Database, roles: ['CHIEF', 'OVERFLOW'] },
     { name: 'Block Overview', path: '/blocks', icon: Building, roles: ['CHIEF', 'OVERFLOW'] },
     { name: 'Live Occupancy', path: '/occupancy', icon: Users, roles: ['CHIEF', 'OVERFLOW'] },
@@ -195,7 +193,6 @@ function AnimatedRoutes() {
           <Route path="/" element={<RouteGuard allowedRoles={['CHIEF']}><DashboardStats /></RouteGuard>} />
           <Route path="/applications" element={<RouteGuard allowedRoles={['CHIEF']}><ApplicationsQueue /></RouteGuard>} />
           <Route path="/database" element={<RouteGuard allowedRoles={['CHIEF', 'OVERFLOW']}><StudentDatabase /></RouteGuard>} />
-          <Route path="/transferred" element={<RouteGuard allowedRoles={['OVERFLOW']}><TransferredQueue /></RouteGuard>} />
           <Route path="/blocks" element={<RouteGuard allowedRoles={['CHIEF', 'OVERFLOW']}><BlockOverview /></RouteGuard>} />
           <Route path="/occupancy" element={<RouteGuard allowedRoles={['CHIEF', 'OVERFLOW']}><RoomOccupancy /></RouteGuard>} />
           <Route path="/communication" element={<RouteGuard allowedRoles={['CHIEF', 'OVERFLOW']}><CommunicationCenter /></RouteGuard>} />
