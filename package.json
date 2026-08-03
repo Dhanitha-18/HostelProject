@@ -1,0 +1,18 @@
+{
+  "name": "hostel-project",
+  "version": "1.0.0",
+  "description": "Hostel Management System - Admin & Student Portal",
+  "scripts": {
+    "install:all": "npm install --prefix Admin/backend && npm install --prefix Admin/frontend && npm install --prefix Student",
+    "db:generate": "npx prisma generate --schema=Admin/backend/prisma/schema.prisma",
+    "db:migrate": "npx prisma migrate deploy --schema=Admin/backend/prisma/schema.prisma",
+    "db:seed": "cd Admin/backend && npx ts-node prisma/seed.ts",
+    "backend": "npm run dev --prefix Admin/backend",
+    "admin": "npm run dev --prefix Admin/frontend",
+    "student": "npm run dev --prefix Student",
+    "dev": "start cmd /k \"npm run backend\" && start cmd /k \"npm run admin\" && start cmd /k \"npm run student\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

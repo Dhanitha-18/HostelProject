@@ -439,8 +439,11 @@ export default function ApplicationsQueue() {
             </Button>
           </div>
           </div>
+<<<<<<< HEAD
+=======
 
           <div className="flex flex-wrap gap-2 items-center">          </div>
+>>>>>>> 5243f0b75e98232ebc4ea3bb182e6cc51a5d6396
         </div>
       </div>
 
@@ -459,11 +462,13 @@ export default function ApplicationsQueue() {
                 Cancel
               </Button>
               {activeView === 'PENDING' ? (
+<<<<<<< HEAD
+=======
                 <>
+>>>>>>> 5243f0b75e98232ebc4ea3bb182e6cc51a5d6396
                   <Button className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-bold shadow-md shadow-indigo-500/20" onClick={() => setIsBatchModalOpen(true)}>
                     Allocate Selected
                   </Button>
-                </>
               ) : (
                 <Button 
                   variant="outline" 
