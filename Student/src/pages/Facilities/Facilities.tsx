@@ -13,7 +13,8 @@ import {
   FireExtinguisher,
   ShirtIcon,
   BathIcon,
-  ArrowUpDownIcon
+  ArrowUpDownIcon,
+  X
 } from 'lucide-react';
 
 const PG_FACILITIES = [
@@ -148,26 +149,31 @@ export const Facilities: React.FC = () => {
         </div>
       </div>
 
-      {/* Full-Screen Lightbox Modal for Facility Images */}
+      {/* Lightbox Modal for Facility Images with Backdrop Blur & Top-Right X Close Button */}
       {selectedImages && (
         <div 
-          className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 no-print"
+          className="fixed inset-0 bg-slate-900/15 backdrop-blur-xl z-50 flex items-center justify-center p-4 sm:p-6 no-print"
           onClick={() => setSelectedImages(null)}
         >
-          <div className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center justify-center space-y-3">
-            <button 
-              onClick={(e) => { e.stopPropagation(); setSelectedImages(null); }}
-              className="absolute -top-12 right-0 text-white hover:text-slate-350 text-xs font-bold uppercase tracking-widest flex items-center gap-1 bg-slate-800/80 px-3.5 py-1.5 rounded-lg border border-slate-700"
-              type="button"
-            >
-              Close [X]
-            </button>
-            <img 
-              src={selectedImages[0]} 
-              alt="Facility View" 
-              className="max-w-full max-h-[75vh] object-contain rounded-2xl border border-slate-850 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
+          <div className="relative max-w-4xl w-full max-h-[85vh] flex items-center justify-center">
+            <div className="relative inline-block overflow-hidden rounded-2xl border border-slate-200/80 shadow-2xl bg-white/60 backdrop-blur-md">
+              {/* Small X close button on right top of image */}
+              <button 
+                onClick={(e) => { e.stopPropagation(); setSelectedImages(null); }}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center shadow-lg transition-all hover:scale-110 z-50 border border-slate-200"
+                aria-label="Close"
+                type="button"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <img 
+                src={selectedImages[0]} 
+                alt="Facility View" 
+                className="max-w-full max-h-[78vh] object-contain rounded-2xl block"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
           </div>
         </div>
       )}

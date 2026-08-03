@@ -70,25 +70,27 @@ export interface SupportContact {
 }
 
 export const mockStudent: Student = {
-  name: "Dhanitha Machireddy",
-  usn: "1TE24CS157",
-  department: "Computer Science & Engineering",
-  semester: 6,
-  year: 3,
-  email: "dhanitha.m@college.edu",
-  phone: "+91 98765 43210",
-  address: "Flat 402, Sunshine Apartments, Jubilee Hills, Hyderabad, 500033",
-  parentContact: "+91 98765 01234 (Father)"
+  id: "",
+  applicationId: "",
+  name: "Guest Student",
+  usn: "",
+  department: "",
+  semester: 1,
+  year: 1,
+  email: "",
+  phone: "",
+  address: "",
+  parentContact: ""
 };
 
 export const mockHostel: HostelInfo = {
-  hostel: "OM SAI PG",
-  block: "A",
-  floor: 3,
-  room: "304",
-  bed: "1",
-  sharing: "2 Sharing",
-  admissionDate: "20 July 2026"
+  hostel: "Unassigned",
+  block: "-",
+  floor: 0,
+  room: "-",
+  bed: "-",
+  sharing: "-",
+  admissionDate: "-"
 };
 
 export const mockFees: FeeSummary = {
@@ -105,42 +107,7 @@ export const mockFees: FeeSummary = {
 
 export const mockNotifications: NotificationItem[] = [];
 
-export const mockReceipts: ReceiptItem[] = [
-  {
-    receiptNo: "REC-2026-8941",
-    studentName: "Dhanitha Machireddy",
-    usn: "1TE24CS157",
-    department: "Computer Science & Engineering",
-    hostelName: "Main Girls Hostel",
-    block: "A",
-    roomNo: "203",
-    bedNo: "2",
-    amountPaid: 10000,
-    remainingAmount: 70000,
-    paymentMethod: "Net Banking (SBI)",
-    transactionId: "TXN5839201948",
-    refNo: "REF7839401",
-    date: "05 July 2026",
-    status: "Verified"
-  },
-  {
-    receiptNo: "REC-2026-7839",
-    studentName: "Dhanitha Machireddy",
-    usn: "1TE24CS157",
-    department: "Computer Science & Engineering",
-    hostelName: "Main Girls Hostel",
-    block: "A",
-    roomNo: "203",
-    bedNo: "2",
-    amountPaid: 5000,
-    remainingAmount: 75000,
-    paymentMethod: "UPI (Google Pay)",
-    transactionId: "TXN1029485736",
-    refNo: "REF1029485",
-    date: "08 July 2026",
-    status: "Verified"
-  }
-];
+export const mockReceipts: ReceiptItem[] = [];
 
 export const mockSupportContacts: SupportContact[] = [
   {

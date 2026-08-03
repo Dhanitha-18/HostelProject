@@ -17,11 +17,11 @@ import { useAuth } from '../../context/AuthContext';
 const SLIDE_IMAGES = [
   {
     url: "/facilities/hero1.jpg",
-    title: 'Welcome to OM SAI PG',
+    title: 'Sri Shyla Nilaya',
     subtitle: 'Sri Shyla Nilaya — A premium, modern residence partnered with BMSIT&M'
   },
   {
-    url: "/facilities/hero2.png",
+    url: "/facilities/hero_building2.png",
     title: 'SVS Nilaya Branch',
     subtitle: 'Fully furnished rooms designed for academic focus and comfort'
   },
@@ -149,117 +149,72 @@ export const Overview: React.FC = () => {
   return (
     <div className="space-y-16 animate-fadeIn pb-16">
       
-      {/* 1. HERO SECTION — Seamless Layout without White Card Frame */}
-      <div className="relative overflow-hidden -mt-1 mb-8">
+      {/* 1. HERO SECTION — Natural Bright Full-Screen Picture Showcase */}
+      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[92vh] min-h-[660px] max-h-[960px] overflow-hidden no-print -mt-6 sm:-mt-6 lg:-mt-6 mb-12 group">
         
-        {/* Soft ambient gradient accents */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100/40 rounded-full blur-3xl pointer-events-none" />
+        {/* 100% Full-Screen Natural Bright Building Images — Smooth Cross-Fade Transition */}
+        <div className="absolute inset-0 z-0">
+          {SLIDE_IMAGES.map((slide, index) => (
+            <img
+              key={slide.url}
+              src={slide.url}
+              alt={slide.title}
+              className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            />
+          ))}
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+        {/* Minimal Bottom Shadow for Text Legibility — No Heavy Dark Filter */}
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent z-10" />
+
+        {/* Small Compact Text at Bottom Left */}
+        <div className="absolute bottom-0 inset-x-0 z-20 p-6 sm:p-12 lg:p-16 max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-6 text-white text-left">
           
-          {/* Left Content */}
-          <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span>Affiliated Housing Partner</span>
-            </div>
+          <div className="space-y-2 max-w-2xl">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase leading-none drop-shadow-md whitespace-nowrap">
+              OM SAI LUXURY PGS
+            </h1>
 
-            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight uppercase leading-[1.1]">
-                OM SAI LUXURY PGS
-              </h1>
-              <p className="text-base sm:text-lg font-bold text-primary uppercase tracking-wider">
-                {SLIDE_IMAGES[currentSlide].title}
-              </p>
-            </div>
-
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-              {SLIDE_IMAGES[currentSlide].subtitle} — Premium off-campus student residence partnered with BMSIT&M. Fully furnished rooms, 24/7 security, 4-meal daily dining, and high-speed Wi-Fi.
+            <p className="text-xs sm:text-sm text-slate-100 font-semibold leading-relaxed drop-shadow-sm max-w-md">
+              {SLIDE_IMAGES[currentSlide].subtitle} — Premium residence partnered with BMSIT&M.
             </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
-              {applicationState === 'not_applied' && (
-                <button
-                  onClick={() => navigate('/apply')}
-                  className="bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-7 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
-                  type="button"
-                >
-                  <span>Apply Now</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </button>
-              )}
-
-              <button
-                onClick={() => navigate('/facilities')}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3.5 px-6 rounded-xl text-xs uppercase tracking-wider border border-slate-200 transition-all flex items-center gap-2"
-                type="button"
-              >
-                <Building2 className="w-4 h-4 text-primary" />
-                <span>Facilities</span>
-              </button>
-            </div>
           </div>
 
-          {/* Right Building Showcase Container */}
-          <div className="lg:col-span-7 relative flex items-center justify-center">
-            <div className="w-full h-[480px] sm:h-[540px] lg:h-[580px] rounded-2xl bg-slate-50 shadow-xl relative overflow-hidden flex items-center justify-center border border-slate-200 group">
-              
-              {/* Building Image — fills the inner box */}
-              <div className="relative z-10 w-full h-full">
-                {SLIDE_IMAGES.map((slide, index) => (
-                  <img
-                    key={slide.url}
-                    src={slide.url}
-                    alt={slide.title}
-                    style={{ animation: 'float 4s ease-in-out infinite' }}
-                    className={`w-full h-full object-cover rounded-xl transition-all duration-700 ease-in-out ${
-                      index === currentSlide ? 'opacity-100 relative' : 'opacity-0 absolute inset-0 pointer-events-none'
-                    }`}
-                  />
-                ))}
-              </div>
+          {/* Minimal Controls & Slide Indicators */}
+          <div className="flex items-center gap-4 shrink-0 self-end">
+            <div className="flex items-center gap-1.5">
+              {SLIDE_IMAGES.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentSlide ? 'bg-amber-400 w-6' : 'bg-white/50 hover:bg-white/80 w-2'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                  type="button"
+                />
+              ))}
+            </div>
 
-              {/* Slider Controls */}
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setCurrentSlide(prev => (prev === 0 ? SLIDE_IMAGES.length - 1 : prev - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white backdrop-blur-md text-slate-800 flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 z-20 border border-slate-200 shadow-md"
+                className="w-9 h-9 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white flex items-center justify-center transition-all border border-white/30 shadow-md"
                 aria-label="Previous Slide"
                 type="button"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setCurrentSlide(prev => (prev + 1) % SLIDE_IMAGES.length)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white backdrop-blur-md text-slate-800 flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 z-20 border border-slate-200 shadow-md"
+                className="w-9 h-9 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white flex items-center justify-center transition-all border border-white/30 shadow-md"
                 aria-label="Next Slide"
                 type="button"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
-
-              {/* Indicators */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
-                {SLIDE_IMAGES.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`h-2.5 rounded-full transition-all duration-300 ${
-                      index === currentSlide ? 'bg-primary w-7' : 'bg-slate-400/50 hover:bg-slate-500 w-2.5'
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                    type="button"
-                  />
-                ))}
-              </div>
-
-              {/* Building Branch Tag */}
-              <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md text-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                <Building2 className="w-3.5 h-3.5 text-primary" />
-                <span>{SLIDE_IMAGES[currentSlide].title}</span>
-              </div>
-
             </div>
           </div>
 

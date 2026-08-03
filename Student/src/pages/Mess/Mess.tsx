@@ -504,24 +504,8 @@ export const Mess: React.FC = () => {
             >
               Weekly Schedule
             </button>
-            <button
-              onClick={() => setViewMode('nutrition')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'nutrition' ? 'bg-white text-primary shadow-sm' : 'text-text-muted hover:text-slate-800'
-              }`}
-            >
-              Nutrition Tracker
-            </button>
           </div>
 
-        </div>
-
-        {/* Daily Summary Bar */}
-        <div className="flex flex-wrap items-center justify-end border-t border-slate-100 pt-3 gap-2 text-xs font-semibold">
-          <div className="text-[10px] text-text-muted font-bold flex items-center gap-3">
-            <span>Daily Intake Est: <strong className="text-slate-800 font-mono text-xs">{totalCal} kcal</strong></span>
-            <span>Est Protein: <strong className="text-primary font-mono text-xs">{totalProt}g</strong></span>
-          </div>
         </div>
 
       </div>
@@ -549,17 +533,13 @@ export const Mess: React.FC = () => {
               { key: 'Dinner', icon: Moon, data: dayMenu.Dinner },
             ] as const).map(({ key, icon: MealIcon, data }) => {
               const isFilteredOut = !filterMatches(data.name, data.desc);
-              const optKey = `${activeDay}-${key}`;
-              const isOptedOut = optedOutMeals.includes(optKey);
 
               if (isFilteredOut) return null;
 
               return (
                 <div 
                   key={key}
-                  className={`bg-white border border-border rounded-2xl overflow-hidden shadow-soft flex flex-col sm:flex-row hover:border-primary/40 transition-all ${
-                    isOptedOut ? 'opacity-50 grayscale' : ''
-                  }`}
+                  className="bg-white border border-border rounded-2xl overflow-hidden shadow-soft flex flex-col sm:flex-row hover:border-primary/40 transition-all"
                 >
                   <div className="w-full sm:w-48 h-48 shrink-0 overflow-hidden relative group bg-slate-100">
                     <img src={data.img} alt={key} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -567,11 +547,6 @@ export const Mess: React.FC = () => {
                     <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-sm text-white px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider flex items-center gap-1">
                       <MealIcon className="w-3.5 h-3.5 text-warning" />
                       {key}
-                    </div>
-
-                    <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 px-2 py-0.5 rounded text-[9px] font-black tracking-wider flex items-center gap-1 shadow">
-                      <Flame className="w-3 h-3 text-danger" />
-                      {data.calories} kcal
                     </div>
                   </div>
 
@@ -584,46 +559,11 @@ export const Mess: React.FC = () => {
                       <p className="text-[11px] text-text-muted leading-relaxed font-semibold">{data.desc}</p>
                     </div>
 
-                    {/* Allergens & Tags */}
-                    <div className="flex flex-wrap items-center gap-1.5 text-[9.5px]">
-                      <span className="font-bold text-text-muted">Contains:</span>
-                      {data.allergens.map(alg => (
-                        <span key={alg} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono font-medium">
-                          {alg}
-                        </span>
-                      ))}
-                      <span className="ml-auto font-mono font-bold text-primary bg-primary/5 px-2 py-0.5 rounded">
-                        Prot: {data.protein}
-                      </span>
-                    </div>
-
                     {/* Footer Actions */}
                     <div className="flex items-center justify-between border-t border-slate-100 pt-3 gap-2">
                       <div className="flex items-center gap-1 text-[10px] text-text-muted font-bold">
                         <Clock className="w-3.5 h-3.5 text-primary" />
                         <span>{data.time}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setRatingMeal({ title: data.name, day: activeDay })}
-                          className="text-[10px] font-bold text-warning hover:text-warning/80 bg-warning/10 px-2 py-1 rounded-lg flex items-center gap-1 transition-colors"
-                        >
-                          <Star className="w-3 h-3 fill-warning" />
-                          <span>{data.rating}</span>
-                          <span className="text-text-muted font-normal">({data.ratingCount})</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleToggleOptOut(optKey)}
-                          className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${
-                            isOptedOut 
-                              ? 'bg-success text-white border-success' 
-                              : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
-                          }`}
-                        >
-                          {isOptedOut ? 'Opted Out (+20 Pts)' : 'Skip Meal'}
-                        </button>
                       </div>
                     </div>
 
@@ -692,14 +632,10 @@ export const Mess: React.FC = () => {
                     <td className="p-3.5 font-black text-slate-900 border-r border-border">{d}</td>
                     <td className="p-3.5 border-r border-border">
                       <div className="font-bold text-slate-800">{menu.Breakfast.name}</div>
-                      <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Breakfast.calories} kcal • {menu.Breakfast.protein}</div>
                     </td>
                     <td className="p-3.5 border-r border-border">
                       {menu.Lunch ? (
-                        <>
-                          <div className="font-bold text-slate-800">{menu.Lunch.name}</div>
-                          <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Lunch.calories} kcal • {menu.Lunch.protein}</div>
-                        </>
+                        <div className="font-bold text-slate-800">{menu.Lunch.name}</div>
                       ) : (
                         <span className="text-[10px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded-md inline-block">
                           Provided in College Mess
@@ -708,85 +644,15 @@ export const Mess: React.FC = () => {
                     </td>
                     <td className="p-3.5 border-r border-border">
                       <div className="font-bold text-slate-800">{menu.Snacks.name}</div>
-                      <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Snacks.calories} kcal • {menu.Snacks.protein}</div>
                     </td>
                     <td className="p-3.5">
                       <div className="font-bold text-slate-800">{menu.Dinner.name}</div>
-                      <div className="text-[10px] text-text-muted font-normal mt-0.5">{menu.Dinner.calories} kcal • {menu.Dinner.protein}</div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {/* VIEW MODE 3: Nutrition Tracker */}
-      {viewMode === 'nutrition' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white border border-border p-6 rounded-2xl shadow-soft space-y-6">
-            <div>
-              <h3 className="text-sm font-black text-text uppercase tracking-wider">{activeDay} Macro Breakdown</h3>
-              <p className="text-[11px] text-text-muted mt-0.5 font-semibold">Nutritional profile calculated for official BMSIT hostel menu.</p>
-            </div>
-
-            {/* Macro Cards */}
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Total Calories</span>
-                <span className="text-xl font-black text-slate-900 font-mono mt-1 block">{totalCal}</span>
-                <span className="text-[10px] text-success font-bold mt-1 block">Within Daily Target</span>
-              </div>
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Total Protein</span>
-                <span className="text-xl font-black text-primary font-mono mt-1 block">{totalProt}g</span>
-                <span className="text-[10px] text-text-muted font-bold mt-1 block">High Protein</span>
-              </div>
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Carbs & Fats</span>
-                <span className="text-xl font-black text-warning font-mono mt-1 block">140g / 32g</span>
-                <span className="text-[10px] text-text-muted font-bold mt-1 block">Balanced Ratio</span>
-              </div>
-            </div>
-
-            {/* Meal by meal progress */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Meal Nutrition Share</h4>
-              {([
-                { label: 'Breakfast', data: dayMenu.Breakfast, color: 'bg-amber-500' },
-                ...(dayMenu.Lunch ? [{ label: 'Lunch', data: dayMenu.Lunch, color: 'bg-primary' }] : []),
-                { label: 'Tea Snacks', data: dayMenu.Snacks, color: 'bg-emerald-500' },
-                { label: 'Dinner', data: dayMenu.Dinner, color: 'bg-indigo-600' }
-              ]).map(m => (
-                <div key={m.label} className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-800">{m.label} ({m.data.name})</span>
-                    <span className="font-mono text-text-muted">{m.data.calories} kcal ({m.data.protein} prot)</span>
-                  </div>
-                  <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div 
-                      className={`h-full ${m.color}`} 
-                      style={{ width: `${Math.min(100, (m.data.calories / 850) * 100)}%` }} 
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-
-          <div className="bg-white border border-border p-6 rounded-2xl shadow-soft space-y-4 h-fit">
-            <h3 className="text-sm font-black text-text uppercase tracking-wider">Dietary Assistance</h3>
-            <p className="text-[11px] text-text-muted leading-relaxed font-semibold">
-              Special dietary requests can be coordinated directly with the Head Mess Warden.
-            </p>
-            <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl space-y-2 text-xs font-semibold">
-              <span className="text-primary font-black uppercase text-[10px] tracking-wider block">Warden Helpline</span>
-              <p className="text-slate-700">Mess Supervisor: BMSIT Mess Cell</p>
-              <p className="text-slate-700">Timings: 8:00 AM - 8:00 PM</p>
-            </div>
-          </div>
         </div>
       )}
 
