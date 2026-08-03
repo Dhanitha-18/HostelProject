@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
 import { usePayment } from '../../context/PaymentContext';
+import { useQuery } from '@tanstack/react-query';
 import {
   CheckCircle2, Lock, Calendar, Star, Send,
   MessageSquare, RefreshCw
 } from 'lucide-react';
 
-interface CategoryRating {
-  messFood: number;
-  cleanliness: number;
-  wifiNetwork: number;
-  maintenance: number;
-  wardenStaff: number;
-}
-
 interface SubmittedFeedbackRecord {
   periodKey: string;
   periodName: string;
-  ratings: CategoryRating;
+  ratings: Record<string, number>;
   comments: string;
   submittedAt: string;
 }
 
 export const Feedback: React.FC = () => {
   const { student } = usePayment();
-  // Selected feedback period (default to June 2026 which opened July 1st)
   const [selectedMonthKey, setSelectedMonthKey] = useState<'june_2026' | 'july_2026'>('june_2026');
 
-  // Track submission status per month with persistence
+  // Fetch categories from backend
+  const { data: categories = [] } = useQuery({
+    queryKey: ['feedbackCategories'],
+    queryFn: async () => {
+      const res = await fetch('http://localhost:5000/api/feedback-categories');
+      if (!res.ok) throw new Error('Failed to fetch');
+      return res.json();
+    }
+  });
+
   const [submittedMonths, setSubmittedMonths] = useState<{ [key: string]: boolean }>(() => {
     try {
       const saved = localStorage.getItem('hostel_student_feedback_submissions');
@@ -37,7 +38,6 @@ export const Feedback: React.FC = () => {
     }
   });
 
-  // Track detailed feedback records
   const [feedbackLogs, setFeedbackLogs] = useState<{ [key: string]: SubmittedFeedbackRecord }>(() => {
     try {
       const saved = localStorage.getItem('hostel_student_feedback_logs');
@@ -47,16 +47,34 @@ export const Feedback: React.FC = () => {
     }
   });
 
-  // Native Form State
-  const [ratings, setRatings] = useState<CategoryRating>({
-    messFood: 5,
-    cleanliness: 5,
-    wifiNetwork: 4,
-    maintenance: 5,
-    wardenStaff: 5
-  });
+  const [ratings, setRatings] = useState<Record<string, number>>({});
   const [comments, setComments] = useState('');
   const [isSuccessToast, setIsSuccessToast] = useState(false);
+
+  // Initialize ratings when categories load
+  useEffect(() => {
+    if (categories.length > 0 && Object.keys(ratings).length === 0) {
+      const initial: Record<string, number> = {};
+      categories.forEach((cat: any) => initial[cat.name] = 5);
+      setRatings(initial);
+    }
+  }, [categories]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hostel_student_feedback_submissions', JSON.stringify(submittedMonths));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [submittedMonths]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hostel_student_feedback_logs', JSON.stringify(feedbackLogs));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [feedbackLogs]);
 
   const periods = {
     june_2026: {
@@ -77,29 +95,11 @@ export const Feedback: React.FC = () => {
   const isSubmitted = Boolean(submittedMonths[selectedMonthKey]);
   const submittedRecord = feedbackLogs[selectedMonthKey];
 
-  // Save to localStorage whenever submittedMonths or feedbackLogs change
-  useEffect(() => {
-    try {
-      localStorage.setItem('hostel_student_feedback_submissions', JSON.stringify(submittedMonths));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [submittedMonths]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('hostel_student_feedback_logs', JSON.stringify(feedbackLogs));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [feedbackLogs]);
-
-  // Change month handler
   const handlePeriodChange = (key: 'june_2026' | 'july_2026') => {
     setSelectedMonthKey(key);
   };
 
-  const markAsSubmitted = (ratingsObj: CategoryRating, commentsText: string) => {
+  const markAsSubmitted = async (ratingsObj: Record<string, number>, commentsText: string) => {
     const record: SubmittedFeedbackRecord = {
       periodKey: selectedMonthKey,
       periodName: currentPeriod.periodName,
@@ -108,10 +108,25 @@ export const Feedback: React.FC = () => {
       submittedAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     };
 
-    setSubmittedMonths(prev => ({ ...prev, [selectedMonthKey]: true }));
-    setFeedbackLogs(prev => ({ ...prev, [selectedMonthKey]: record }));
-    setIsSuccessToast(true);
-    setTimeout(() => setIsSuccessToast(false), 4000);
+    try {
+      await fetch('http://localhost:5000/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: student?.name || 'Unknown Student',
+          usn: student?.usn || 'Unknown USN',
+          periodName: currentPeriod.periodName,
+          ratings: ratingsObj,
+          comments: commentsText
+        })
+      });
+      setSubmittedMonths(prev => ({ ...prev, [selectedMonthKey]: true }));
+      setFeedbackLogs(prev => ({ ...prev, [selectedMonthKey]: record }));
+      setIsSuccessToast(true);
+      setTimeout(() => setIsSuccessToast(false), 4000);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleNativeFormSubmit = (e: React.FormEvent) => {
@@ -123,21 +138,19 @@ export const Feedback: React.FC = () => {
     setSubmittedMonths(prev => ({ ...prev, [selectedMonthKey]: false }));
   };
 
-  const handleStarClick = (categoryKey: keyof CategoryRating, starValue: number) => {
-    setRatings(prev => ({ ...prev, [categoryKey]: starValue }));
+  const handleStarClick = (categoryName: string, starValue: number) => {
+    setRatings(prev => ({ ...prev, [categoryName]: starValue }));
   };
 
   return (
     <div className="space-y-8 animate-fadeIn pb-16 relative">
 
-      {/* Hero Banner */}
       <HeroBanner
         image="/facilities/block4.jpeg"
         title="Student Feedback"
         subtitle="Your feedback helps us improve hostel facilities, dining quality, and maintenance services."
       />
 
-      {/* Success Toast Notification */}
       {isSuccessToast && (
         <div className="bg-success text-white p-4 rounded-xl shadow-lg flex items-center justify-between animate-fadeIn">
           <div className="flex items-center gap-2">
@@ -148,7 +161,6 @@ export const Feedback: React.FC = () => {
         </div>
       )}
 
-      {/* Month Selector / Cycle Switcher Bar */}
       <div className="bg-white border border-border p-4 rounded-2xl shadow-soft flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-primary" />
@@ -162,36 +174,35 @@ export const Feedback: React.FC = () => {
           <button
             type="button"
             onClick={() => handlePeriodChange('june_2026')}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border ${selectedMonthKey === 'june_2026'
+            className={\`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border \${selectedMonthKey === 'june_2026'
                 ? 'bg-primary text-white border-primary shadow-sm font-black'
                 : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
-              }`}
+              }\`}
           >
             June 2026 (Open)
           </button>
           <button
             type="button"
             onClick={() => handlePeriodChange('july_2026')}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border ${selectedMonthKey === 'july_2026'
+            className={\`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border \${selectedMonthKey === 'july_2026'
                 ? 'bg-primary text-white border-primary shadow-sm font-black'
                 : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
-              }`}
+              }\`}
           >
             July 2026 (Upcoming)
           </button>
         </div>
       </div>
 
-      {/* Student Dashboard Professional Status Card */}
       <div className="bg-white border border-border p-6 rounded-2xl shadow-soft space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">
             Monthly Hostel Feedback
           </h3>
-          <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${currentPeriod.isOpen
+          <span className={\`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border \${currentPeriod.isOpen
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
               : 'bg-amber-50 text-amber-700 border-amber-200'
-            }`}>
+            }\`}>
             {currentPeriod.isOpen ? '🟢 Open for Submission' : '🔒 Not Yet Available'}
           </span>
         </div>
@@ -204,7 +215,7 @@ export const Feedback: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-1">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Availability</span>
-            <span className={`text-xs font-black ${currentPeriod.isOpen ? 'text-emerald-600' : 'text-amber-600'}`}>
+            <span className={\`text-xs font-black \${currentPeriod.isOpen ? 'text-emerald-600' : 'text-amber-600'}\`}>
               {currentPeriod.isOpen ? 'Open' : 'Locked'}
             </span>
           </div>
@@ -216,16 +227,13 @@ export const Feedback: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-1">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Status</span>
-            <span className={`text-xs font-black ${isSubmitted ? 'text-emerald-600' : 'text-amber-600'}`}>
+            <span className={\`text-xs font-black \${isSubmitted ? 'text-emerald-600' : 'text-amber-600'}\`}>
               {isSubmitted ? 'Submitted ✓' : 'Not Submitted'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* MAIN CONTENT REGION */}
-
-      {/* CASE 1: Period is NOT YET OPEN */}
       {!currentPeriod.isOpen && (
         <div className="bg-white border border-border p-8 sm:p-12 text-center rounded-2xl shadow-soft space-y-6 max-w-2xl mx-auto">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
@@ -248,7 +256,6 @@ export const Feedback: React.FC = () => {
         </div>
       )}
 
-      {/* CASE 2: Period IS OPEN & Already Submitted */}
       {currentPeriod.isOpen && isSubmitted && (
         <div className="bg-white border border-emerald-200 p-8 sm:p-10 text-center rounded-2xl shadow-soft space-y-6 max-w-2xl mx-auto animate-fadeIn">
           <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
@@ -275,11 +282,11 @@ export const Feedback: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div>Mess & Dining: <strong className="text-warning">★ {submittedRecord.ratings.messFood}/5</strong></div>
-                <div>Sanitation: <strong className="text-warning">★ {submittedRecord.ratings.cleanliness}/5</strong></div>
-                <div>Wi-Fi Network: <strong className="text-warning">★ {submittedRecord.ratings.wifiNetwork}/5</strong></div>
-                <div>Maintenance: <strong className="text-warning">★ {submittedRecord.ratings.maintenance}/5</strong></div>
-                <div className="col-span-2">Warden Staff: <strong className="text-warning">★ {submittedRecord.ratings.wardenStaff}/5</strong></div>
+                {Object.entries(submittedRecord.ratings || {}).map(([cat, rating]) => (
+                  <div key={cat} className="capitalize">
+                    {cat}: <strong className="text-warning">★ {rating}/5</strong>
+                  </div>
+                ))}
               </div>
 
               {submittedRecord.comments && (
@@ -304,11 +311,9 @@ export const Feedback: React.FC = () => {
         </div>
       )}
 
-      {/* CASE 3: Period IS OPEN & Not Yet Submitted */}
       {currentPeriod.isOpen && !isSubmitted && (
         <div className="space-y-6">
 
-          {/* Interactive In-App Ratings Form */}
           <div className="bg-white border border-border p-6 sm:p-8 rounded-2xl shadow-soft space-y-6">
               <div>
                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -322,112 +327,29 @@ export const Feedback: React.FC = () => {
 
               <form onSubmit={handleNativeFormSubmit} className="space-y-6 text-xs font-semibold">
 
-                {/* Rating Categories */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                  {/* Category 1: Mess Food */}
-                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-800 text-xs">🍲 Mess & Dining Food Quality</span>
-                      <span className="font-mono text-xs font-black text-warning">★ {ratings.messFood}/5</span>
+                  {categories.map((cat: any) => (
+                    <div key={cat.id} className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-black text-slate-800 text-xs capitalize">{cat.name}</span>
+                        <span className="font-mono text-xs font-black text-warning">★ {ratings[cat.name] || 5}/5</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => handleStarClick(cat.name, star)}
+                            className="p-1 hover:scale-110 transition-transform"
+                          >
+                            <Star className={\`w-6 h-6 \${star <= (ratings[cat.name] || 5) ? 'fill-warning text-warning' : 'text-slate-300'}\`} />
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleStarClick('messFood', star)}
-                          className="p-1 hover:scale-110 transition-transform"
-                        >
-                          <Star className={`w-6 h-6 ${star <= ratings.messFood ? 'fill-warning text-warning' : 'text-slate-300'}`} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Category 2: Cleanliness */}
-                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-800 text-xs">🧹 Sanitation & Housekeeping</span>
-                      <span className="font-mono text-xs font-black text-warning">★ {ratings.cleanliness}/5</span>
-                    </div>
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleStarClick('cleanliness', star)}
-                          className="p-1 hover:scale-110 transition-transform"
-                        >
-                          <Star className={`w-6 h-6 ${star <= ratings.cleanliness ? 'fill-warning text-warning' : 'text-slate-300'}`} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Category 3: Wi-Fi */}
-                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-800 text-xs">📶 Wi-Fi Network & Speed</span>
-                      <span className="font-mono text-xs font-black text-warning">★ {ratings.wifiNetwork}/5</span>
-                    </div>
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleStarClick('wifiNetwork', star)}
-                          className="p-1 hover:scale-110 transition-transform"
-                        >
-                          <Star className={`w-6 h-6 ${star <= ratings.wifiNetwork ? 'fill-warning text-warning' : 'text-slate-300'}`} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Category 4: Maintenance */}
-                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-800 text-xs">🛠️ Maintenance & Repairs</span>
-                      <span className="font-mono text-xs font-black text-warning">★ {ratings.maintenance}/5</span>
-                    </div>
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleStarClick('maintenance', star)}
-                          className="p-1 hover:scale-110 transition-transform"
-                        >
-                          <Star className={`w-6 h-6 ${star <= ratings.maintenance ? 'fill-warning text-warning' : 'text-slate-300'}`} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Category 5: Warden & Staff */}
-                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2 md:col-span-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-800 text-xs">👨‍💼 Warden & Hostel Staff Responsiveness</span>
-                      <span className="font-mono text-xs font-black text-warning">★ {ratings.wardenStaff}/5</span>
-                    </div>
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleStarClick('wardenStaff', star)}
-                          className="p-1 hover:scale-110 transition-transform"
-                        >
-                          <Star className={`w-6 h-6 ${star <= ratings.wardenStaff ? 'fill-warning text-warning' : 'text-slate-300'}`} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
+                  ))}
                 </div>
 
-                {/* Detailed Comments */}
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-text-muted uppercase tracking-wider">Detailed Suggestions & Feedback Comments</label>
                   <textarea

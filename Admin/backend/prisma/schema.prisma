@@ -170,17 +170,19 @@ model Facility {
   createdAt   DateTime @default(now())
 }
 
+model FeedbackCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
 model Feedback {
   id          String   @id @default(uuid())
-  studentName String
-  usn         String
+  studentName String?
+  usn         String?
   periodName  String
-  messFood    Int
-  cleanliness Int
-  wifiNetwork Int
-  maintenance Int
-  wardenStaff Int
-  comments    String
+  ratings     String   // JSON string: { "Mess Food": 5, "WiFi": 4 }
+  comments    String?
   createdAt   DateTime @default(now())
 }
 
