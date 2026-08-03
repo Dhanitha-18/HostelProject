@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { usePayment } from '../../context/PaymentContext';
 import {
   CheckCircle2, Lock, Calendar, Star, Send,
   MessageSquare, RefreshCw
@@ -22,6 +23,7 @@ interface SubmittedFeedbackRecord {
 }
 
 export const Feedback: React.FC = () => {
+  const { student } = usePayment();
   // Selected feedback period (default to June 2026 which opened July 1st)
   const [selectedMonthKey, setSelectedMonthKey] = useState<'june_2026' | 'july_2026'>('june_2026');
 

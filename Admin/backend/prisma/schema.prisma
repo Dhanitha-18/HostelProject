@@ -174,8 +174,13 @@ model Feedback {
   id          String   @id @default(uuid())
   studentName String
   usn         String
-  message     String
-  rating      Int
+  periodName  String
+  messFood    Int
+  cleanliness Int
+  wifiNetwork Int
+  maintenance Int
+  wardenStaff Int
+  comments    String
   createdAt   DateTime @default(now())
 }
 
@@ -236,4 +241,31 @@ model EmailHistory {
   status      String
   mode        String
   createdAt   DateTime @default(now())
+}
+
+model SocialGroup {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  iconName  String
+  desc      String
+  badge     String?
+  createdAt DateTime @default(now())
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  groupId     String
+  senderName  String
+  usn         String
+  roomNo      String
+  message     String
+  time        String
+  likes       Int      @default(0)
+  categoryTag String?
+  price       String?
+  imgUrl      String?
+  createdAt   DateTime @default(now())
+
+  group       SocialGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
