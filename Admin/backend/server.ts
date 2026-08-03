@@ -2935,6 +2935,57 @@ app.get('/api/email-history', async (req, res) => {
   }
 });
 
+// ─── Facilities CRUD ─────────────────────────────────────────────────────────
+
+// GET all facilities
+app.get('/api/facilities', async (req, res) => {
+  try {
+    const facilities = await prisma.facility.findMany({ orderBy: { createdAt: 'asc' } });
+    res.json(facilities);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch facilities' });
+  }
+});
+
+// POST create facility
+app.post('/api/facilities', async (req, res) => {
+  try {
+    const { title, description, imageUrl } = req.body;
+    const facility = await prisma.facility.create({ data: { title, description, imageUrl: imageUrl || null } });
+    res.status(201).json(facility);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create facility' });
+  }
+});
+
+// PUT update facility
+app.put('/api/facilities/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, imageUrl } = req.body;
+    const facility = await prisma.facility.update({
+      where: { id },
+      data: { title, description, imageUrl: imageUrl || null }
+    });
+    res.json(facility);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update facility' });
+  }
+});
+
+// DELETE facility
+app.delete('/api/facilities/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.facility.delete({ where: { id } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete facility' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
