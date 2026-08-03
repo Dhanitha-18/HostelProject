@@ -298,7 +298,7 @@ export default function FeedbackControl() {
                     <span className="font-bold text-sm text-slate-700 capitalize">{cat.name}</span>
                     <button 
                       onClick={() => {
-                        if (window.confirm('Delete this category? Current feedback won\\'t be affected, but future forms won\\'t show it.')) {
+                        if (window.confirm("Delete this category? Current feedback won't be affected, but future forms won't show it.")) {
                           deleteCategoryMutation.mutate(cat.id);
                         }
                       }}

@@ -174,20 +174,20 @@ export const Feedback: React.FC = () => {
           <button
             type="button"
             onClick={() => handlePeriodChange('june_2026')}
-            className={\`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border \${selectedMonthKey === 'june_2026'
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border \${selectedMonthKey === 'june_2026'
                 ? 'bg-primary text-white border-primary shadow-sm font-black'
                 : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
-              }\`}
+              }`}
           >
             June 2026 (Open)
           </button>
           <button
             type="button"
             onClick={() => handlePeriodChange('july_2026')}
-            className={\`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border \${selectedMonthKey === 'july_2026'
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all border \${selectedMonthKey === 'july_2026'
                 ? 'bg-primary text-white border-primary shadow-sm font-black'
                 : 'bg-slate-50 text-slate-700 border-border hover:bg-slate-100'
-              }\`}
+              }`}
           >
             July 2026 (Upcoming)
           </button>
@@ -199,10 +199,10 @@ export const Feedback: React.FC = () => {
           <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">
             Monthly Hostel Feedback
           </h3>
-          <span className={\`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border \${currentPeriod.isOpen
+          <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border \${currentPeriod.isOpen
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
               : 'bg-amber-50 text-amber-700 border-amber-200'
-            }\`}>
+            }`}>
             {currentPeriod.isOpen ? '🟢 Open for Submission' : '🔒 Not Yet Available'}
           </span>
         </div>
@@ -215,7 +215,7 @@ export const Feedback: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-1">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Availability</span>
-            <span className={\`text-xs font-black \${currentPeriod.isOpen ? 'text-emerald-600' : 'text-amber-600'}\`}>
+            <span className={`text-xs font-black \${currentPeriod.isOpen ? 'text-emerald-600' : 'text-amber-600'}`}>
               {currentPeriod.isOpen ? 'Open' : 'Locked'}
             </span>
           </div>
@@ -227,7 +227,7 @@ export const Feedback: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-1">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Status</span>
-            <span className={\`text-xs font-black \${isSubmitted ? 'text-emerald-600' : 'text-amber-600'}\`}>
+            <span className={`text-xs font-black \${isSubmitted ? 'text-emerald-600' : 'text-amber-600'}`}>
               {isSubmitted ? 'Submitted ✓' : 'Not Submitted'}
             </span>
           </div>
@@ -342,7 +342,7 @@ export const Feedback: React.FC = () => {
                             onClick={() => handleStarClick(cat.name, star)}
                             className="p-1 hover:scale-110 transition-transform"
                           >
-                            <Star className={\`w-6 h-6 \${star <= (ratings[cat.name] || 5) ? 'fill-warning text-warning' : 'text-slate-300'}\`} />
+                            <Star className={`w-6 h-6 \${star <= (ratings[cat.name] || 5) ? 'fill-warning text-warning' : 'text-slate-300'}`} />
                           </button>
                         ))}
                       </div>
