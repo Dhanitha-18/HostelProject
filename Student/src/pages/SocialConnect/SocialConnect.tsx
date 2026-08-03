@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { usePayment } from '../../context/PaymentContext';
 import { HeroBanner } from '../../components/layout/HeroBanner';
-import { socket } from '../../lib/socket';
+// import { socket } from '../../lib/socket';
 import { 
   Send, ShieldAlert, Heart, Plus, ShoppingBag, 
   Search, Pin, Tag, MessageSquare, Megaphone, Users, HelpCircle, Sparkles
@@ -103,42 +103,42 @@ export const SocialConnect: React.FC = () => {
     }
   }, [activeChannelId, student.usn]);
 
-  useEffect(() => {
-    const handleNewMsg = (msg: any) => {
-      setChannelMessages(prev => {
-        const msgs = prev[msg.groupId] || [];
-        if (msgs.find(m => m.id === msg.id)) return prev;
-        return { ...prev, [msg.groupId]: [...msgs, { ...msg, isSelf: msg.usn === student.usn }] };
-      });
-    };
-    const handleUpdate = () => {
-      if (activeChannelId === 'announcements') {
-        fetch('http://localhost:5000/api/social')
-          .then(res => res.json())
-          .then(data => {
-            const adminPosts: ChatMessage[] = data.map((d: any) => ({
-              id: d.id,
-              senderName: d.author,
-              usn: 'ADMIN',
-              roomNo: 'Office',
-              message: `${d.title}\n\n${d.content}`,
-              time: new Date(d.createdAt).toLocaleDateString(),
-              isSelf: false,
-              likes: 0,
-              categoryTag: d.type
-            }));
-            setChannelMessages(prev => ({ ...prev, announcements: adminPosts }));
-          })
-          .catch(err => console.error(err));
-      }
-    };
-    socket.on('new_chat_message', handleNewMsg);
-    socket.on('data_updated', handleUpdate);
-    return () => {
-      socket.off('new_chat_message', handleNewMsg);
-      socket.off('data_updated', handleUpdate);
-    };
-  }, [activeChannelId, student.usn]);
+  // useEffect(() => {
+  //   const handleNewMsg = (msg: any) => {
+  //     setChannelMessages(prev => {
+  //       const msgs = prev[msg.groupId] || [];
+  //       if (msgs.find(m => m.id === msg.id)) return prev;
+  //       return { ...prev, [msg.groupId]: [...msgs, { ...msg, isSelf: msg.usn === student.usn }] };
+  //     });
+  //   };
+  //   const handleUpdate = () => {
+  //     if (activeChannelId === 'announcements') {
+  //       fetch('http://localhost:5000/api/social')
+  //         .then(res => res.json())
+  //         .then(data => {
+  //           const adminPosts: ChatMessage[] = data.map((d: any) => ({
+  //             id: d.id,
+  //             senderName: d.author,
+  //             usn: 'ADMIN',
+  //             roomNo: 'Office',
+  //             message: `${d.title}\n\n${d.content}`,
+  //             time: new Date(d.createdAt).toLocaleDateString(),
+  //             isSelf: false,
+  //             likes: 0,
+  //             categoryTag: d.type
+  //           }));
+  //           setChannelMessages(prev => ({ ...prev, announcements: adminPosts }));
+  //         })
+  //         .catch(err => console.error(err));
+  //     }
+  //   };
+  //   socket.on('new_chat_message', handleNewMsg);
+  //   socket.on('data_updated', handleUpdate);
+  //   return () => {
+  //     socket.off('new_chat_message', handleNewMsg);
+  //     socket.off('data_updated', handleUpdate);
+  //   };
+  // }, [activeChannelId, student.usn]);
 
   const [inputText, setInputText] = useState('');
   const [searchResident, setSearchResident] = useState('');
