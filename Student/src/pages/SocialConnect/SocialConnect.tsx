@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { usePayment } from '../../context/PaymentContext';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { socket } from '../../lib/socket';
 import { 
   Send, ShieldAlert, Heart, Plus, ShoppingBag, 
-  Search, Pin, Tag
+  Search, Pin, Tag, MessageSquare, Megaphone, Users, HelpCircle, Sparkles
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -19,6 +20,7 @@ interface ChatMessage {
   price?: string;
   categoryTag?: string;
   imgUrl?: string;
+  groupId?: string;
 }
 
 interface Channel {
@@ -29,132 +31,50 @@ interface Channel {
   badge?: string;
 }
 
-const CHANNELS: Channel[] = [
-  { id: 'announcements', name: 'admin-announcements', iconName: 'Megaphone', desc: 'Official notices and events from admin', badge: 'New' },
-  { id: 'general', name: 'general-lounge', iconName: 'MessageSquare', desc: 'Main lounge chat for all PG residents' },
-  { id: 'marketplace', name: 'buy-sell-market', iconName: 'ShoppingBag', desc: 'Resident marketplace for books, kettles, gear', badge: 'Active' },
-  { id: 'study', name: 'study-groups', iconName: 'Users', desc: 'Exam prep, coding projects & assignment help' },
-  { id: 'lostfound', name: 'lost-and-found', iconName: 'HelpCircle', desc: 'Report & claim lost items in common areas' },
-  { id: 'sports', name: 'sports-and-events', iconName: 'Sparkles', desc: 'Cricket matches, gaming nights & weekend plans' }
-];
-
-const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
-  general: [
-    {
-      id: 'msg-1',
-      senderName: 'Anish Deshpande',
-      usn: '1BY24CS015',
-      roomNo: 'Room 204',
-      message: 'Hey everyone! Is the laundry van coming today? I have a couple of bedsheets to hand over.',
-      time: '4:15 PM',
-      isSelf: false,
-      likes: 3
-    },
-    {
-      id: 'msg-2',
-      senderName: 'Rohan Sharma',
-      usn: '1BY23IS048',
-      roomNo: 'Room 310',
-      message: 'Yes Anish! The warden posted a circular. Laundry guy will be near the basement parking at 5:00 PM.',
-      time: '4:18 PM',
-      isSelf: false,
-      likes: 5
-    },
-    {
-      id: 'msg-3',
-      senderName: 'Sanjay Kumar',
-      usn: '1BY24EC102',
-      roomNo: 'Room 108',
-      message: 'Anyone up for Table Tennis in the recreation room after 6:30 PM?',
-      time: '4:20 PM',
-      isSelf: false,
-      likes: 4
-    }
-  ],
-  marketplace: [
-    {
-      id: 'msg-m1',
-      senderName: 'Kavya Nair',
-      usn: '1BY23EC088',
-      roomNo: 'Room 402',
-      message: 'Selling my Philips 1.5L Electric Kettle in mint condition. Auto cut-off feature works perfectly!',
-      time: '2:10 PM',
-      isSelf: false,
-      likes: 7,
-      price: '₹450',
-      categoryTag: 'Appliance',
-      imgUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80'
-    },
-    {
-      id: 'msg-m2',
-      senderName: 'Vikramaditya',
-      usn: '1BY22CS190',
-      roomNo: 'Room 304',
-      message: 'Engineering Mathematics Vol 3 textbook by BS Grewal. Zero markings inside.',
-      time: '3:45 PM',
-      isSelf: false,
-      likes: 9,
-      price: '₹200',
-      categoryTag: 'Books'
-    }
-  ],
-  study: [
-    {
-      id: 'msg-s1',
-      senderName: 'Neha Reddy',
-      usn: '1BY24AI012',
-      roomNo: 'Room 212',
-      message: 'Forming a study group for Data Structures mid-term exam in 2nd floor study hall at 8 PM today!',
-      time: '1:30 PM',
-      isSelf: false,
-      likes: 8
-    }
-  ],
-  lostfound: [
-    {
-      id: 'msg-l1',
-      senderName: 'Hostel Security',
-      usn: 'STAFF-02',
-      roomNo: 'Guard Desk',
-      message: 'Found a pair of black Sony wireless earbuds near the mess dining counter. Collect from security desk with ID proof.',
-      time: '11:00 AM',
-      isSelf: false,
-      likes: 12,
-      categoryTag: 'Found Item'
-    }
-  ],
-  sports: [
-    {
-      id: 'msg-sp1',
-      senderName: 'Rahul Verma',
-      usn: '1BY23ME050',
-      roomNo: 'Room 115',
-      message: 'IPL Match screening in main TV lounge at 7:30 PM tonight! Snacks provided by floor committee.',
-      time: '3:00 PM',
-      isSelf: false,
-      likes: 18
-    }
-  ]
+const getIcon = (name: string) => {
+  switch (name) {
+    case 'Megaphone': return <Megaphone className="w-5 h-5" />;
+    case 'Users': return <Users className="w-5 h-5" />;
+    case 'ShoppingBag': return <ShoppingBag className="w-5 h-5" />;
+    case 'HelpCircle': return <HelpCircle className="w-5 h-5" />;
+    case 'Sparkles': return <Sparkles className="w-5 h-5" />;
+    case 'MessageSquare':
+    default: return <MessageSquare className="w-5 h-5" />;
+  }
 };
 
 export const SocialConnect: React.FC = () => {
   const { student, hostel } = usePayment();
-  const [activeChannelId, setActiveChannelId] = useState<string>('general');
-  const [channelMessages, setChannelMessages] = useState<Record<string, ChatMessage[]>>(() => {
-    try {
-      const saved = localStorage.getItem('hostel_chat_messages');
-      return saved ? JSON.parse(saved) : INITIAL_MESSAGES;
-    } catch {
-      return INITIAL_MESSAGES;
-    }
-  });
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [activeChannelId, setActiveChannelId] = useState<string>('announcements');
+  const [channelMessages, setChannelMessages] = useState<Record<string, ChatMessage[]>>({});
 
   useEffect(() => {
-    const fetchSocial = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/social');
-        if (res.ok) {
-          const data = await res.json();
+    fetch('http://localhost:5000/api/social-groups')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          const formatted = data.map((g: any) => ({
+            id: g.id,
+            name: g.name,
+            iconName: g.iconName || 'MessageSquare',
+            desc: g.desc,
+            badge: g.badge
+          }));
+          setChannels([{ id: 'announcements', name: 'admin-announcements', iconName: 'Megaphone', desc: 'Official notices', badge: 'New' }, ...formatted]);
+        } else {
+          setChannels([{ id: 'announcements', name: 'admin-announcements', iconName: 'Megaphone', desc: 'Official notices', badge: 'New' }]);
+        }
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    if (!activeChannelId) return;
+    if (activeChannelId === 'announcements') {
+      fetch('http://localhost:5000/api/social')
+        .then(res => res.json())
+        .then(data => {
           const adminPosts: ChatMessage[] = data.map((d: any) => ({
             id: d.id,
             senderName: d.author,
@@ -166,45 +86,75 @@ export const SocialConnect: React.FC = () => {
             likes: 0,
             categoryTag: d.type
           }));
-          
-          setChannelMessages(prev => ({
-            ...prev,
-            announcements: adminPosts
+          setChannelMessages(prev => ({ ...prev, [activeChannelId]: adminPosts }));
+        })
+        .catch(err => console.error(err));
+    } else {
+      fetch(`http://localhost:5000/api/chat-messages/${activeChannelId}`)
+        .then(res => res.json())
+        .then(data => {
+          const msgs = data.map((m: any) => ({
+            ...m,
+            isSelf: m.usn === student.usn
           }));
-        }
-      } catch (err) {
-        console.error(err);
+          setChannelMessages(prev => ({ ...prev, [activeChannelId]: msgs }));
+        })
+        .catch(err => console.error(err));
+    }
+  }, [activeChannelId, student.usn]);
+
+  useEffect(() => {
+    const handleNewMsg = (msg: any) => {
+      setChannelMessages(prev => {
+        const msgs = prev[msg.groupId] || [];
+        if (msgs.find(m => m.id === msg.id)) return prev;
+        return { ...prev, [msg.groupId]: [...msgs, { ...msg, isSelf: msg.usn === student.usn }] };
+      });
+    };
+    const handleUpdate = () => {
+      if (activeChannelId === 'announcements') {
+        fetch('http://localhost:5000/api/social')
+          .then(res => res.json())
+          .then(data => {
+            const adminPosts: ChatMessage[] = data.map((d: any) => ({
+              id: d.id,
+              senderName: d.author,
+              usn: 'ADMIN',
+              roomNo: 'Office',
+              message: `${d.title}\n\n${d.content}`,
+              time: new Date(d.createdAt).toLocaleDateString(),
+              isSelf: false,
+              likes: 0,
+              categoryTag: d.type
+            }));
+            setChannelMessages(prev => ({ ...prev, announcements: adminPosts }));
+          })
+          .catch(err => console.error(err));
       }
     };
-    fetchSocial();
-  }, []);
+    socket.on('new_chat_message', handleNewMsg);
+    socket.on('data_updated', handleUpdate);
+    return () => {
+      socket.off('new_chat_message', handleNewMsg);
+      socket.off('data_updated', handleUpdate);
+    };
+  }, [activeChannelId, student.usn]);
+
   const [inputText, setInputText] = useState('');
   const [searchResident, setSearchResident] = useState('');
 
-  // Pinned Messages state
   const [pinnedMessages, setPinnedMessages] = useState<Record<string, string>>(() => {
     try {
       const saved = localStorage.getItem('hostel_pinned_messages');
-      return saved ? JSON.parse(saved) : {
-        general: 'Notice: Keep hostel lounge noise low after 10:00 PM. Clean up common tables after meals.',
-        marketplace: 'Tip: Always verify the condition of electrical appliances before purchasing.',
-        study: 'Exam Notice: Mid-semester exams start on Monday. Study rooms are open 24/7.',
-        lostfound: 'Notice: Unclaimed items will be donated to charity at the end of the semester.',
-        sports: 'Announcement: Hostel Cricket Premier League registrations close tomorrow!'
-      };
+      return saved ? JSON.parse(saved) : {};
     } catch {
-      return {
-        general: 'Notice: Keep hostel lounge noise low after 10:00 PM. Clean up common tables after meals.'
-      };
+      return {};
     }
   });
 
-  // Modal Popover States
   const [selectedResident, setSelectedResident] = useState<{ name: string; usn: string; room: string; status: string } | null>(null);
   const [interestedItem, setInterestedItem] = useState<ChatMessage | null>(null);
   const [interestOfferMessage, setInterestOfferMessage] = useState('Hey! Is this item still available? I would like to buy it.');
-
-  // Marketplace Modal state
   const [showMarketplaceModal, setShowMarketplaceModal] = useState(false);
   const [itemTitle, setItemTitle] = useState('');
   const [itemPrice, setItemPrice] = useState('');
@@ -214,19 +164,9 @@ export const SocialConnect: React.FC = () => {
 
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
 
-  const activeChannel = CHANNELS.find(c => c.id === activeChannelId) || CHANNELS[0];
+  const activeChannel = channels.find(c => c.id === activeChannelId) || channels[0] || { id: '', name: '', iconName: 'MessageSquare', desc: '' };
   const currentMessages = channelMessages[activeChannelId] || [];
 
-  // Effect to persist chat messages
-  useEffect(() => {
-    try {
-      localStorage.setItem('hostel_chat_messages', JSON.stringify(channelMessages));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [channelMessages]);
-
-  // Effect to persist pinned messages
   useEffect(() => {
     try {
       localStorage.setItem('hostel_pinned_messages', JSON.stringify(pinnedMessages));
@@ -235,31 +175,32 @@ export const SocialConnect: React.FC = () => {
     }
   }, [pinnedMessages]);
 
-  // Auto-scroll to bottom of chat on new message
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [channelMessages, activeChannelId]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || activeChannelId === 'announcements') return;
 
-    const newMessage: ChatMessage = {
-      id: `msg-${Date.now()}`,
+    const newMessage = {
+      groupId: activeChannelId,
       senderName: student.name,
       usn: student.usn,
       roomNo: hostel ? `Room ${hostel.room}` : 'Room 304',
       message: inputText.trim(),
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      isSelf: true,
       likes: 0
     };
 
-    setChannelMessages(prev => ({
-      ...prev,
-      [activeChannelId]: [...(prev[activeChannelId] || []), newMessage]
-    }));
-    setInputText('');
+    try {
+      await fetch('http://localhost:5000/api/chat-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMessage)
+      });
+      setInputText('');
+    } catch (err) {}
   };
 
   const handleLikeMessage = (msgId: string) => {
@@ -286,33 +227,34 @@ export const SocialConnect: React.FC = () => {
     }));
   };
 
-  const handleBuyInquirySubmit = (e: React.FormEvent) => {
+  const handleBuyInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!interestedItem) return;
+    if (!interestedItem || activeChannelId === 'announcements') return;
 
-    const inquiryMessage: ChatMessage = {
-      id: `msg-${Date.now()}`,
+    const inquiryMessage = {
+      groupId: activeChannelId,
       senderName: student.name,
       usn: student.usn,
       roomNo: hostel ? `Room ${hostel.room}` : 'Room 304',
       message: `[INQUIRY] Hey ${interestedItem.senderName}, I am interested in your listing '${interestedItem.message.split(':')[0]}'. ${interestOfferMessage}`,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      isSelf: true,
       likes: 0
     };
 
-    setChannelMessages(prev => ({
-      ...prev,
-      marketplace: [...(prev.marketplace || []), inquiryMessage]
-    }));
-
-    setInterestedItem(null);
-    setInterestOfferMessage('Hey! Is this item still available? I would like to buy it.');
+    try {
+      await fetch('http://localhost:5000/api/chat-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inquiryMessage)
+      });
+      setInterestedItem(null);
+      setInterestOfferMessage('Hey! Is this item still available? I would like to buy it.');
+    } catch (err) {}
   };
 
-  const handlePostMarketplaceItem = (e: React.FormEvent) => {
+  const handlePostMarketplaceItem = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!itemTitle || !itemPrice) return;
+    if (!itemTitle || !itemPrice || activeChannelId === 'announcements') return;
 
     let finalImgUrl: string | undefined = undefined;
     if (itemImagePreset === 'book') finalImgUrl = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80';
@@ -320,31 +262,31 @@ export const SocialConnect: React.FC = () => {
     if (itemImagePreset === 'chair') finalImgUrl = 'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80';
     if (itemImagePreset === 'cycle') finalImgUrl = 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80';
 
-    const newListing: ChatMessage = {
-      id: `msg-m-${Date.now()}`,
+    const newListing = {
+      groupId: activeChannelId,
       senderName: student.name,
       usn: student.usn,
       roomNo: hostel ? `Room ${hostel.room}` : 'Room 304',
       message: `${itemTitle}: ${itemDesc}`,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      isSelf: true,
       likes: 1,
       price: `₹${itemPrice}`,
       categoryTag: itemCategory,
       imgUrl: finalImgUrl
     };
 
-    setChannelMessages(prev => ({
-      ...prev,
-      marketplace: [...(prev.marketplace || []), newListing]
-    }));
-
-    setItemTitle('');
-    setItemPrice('');
-    setItemDesc('');
-    setItemImagePreset('none');
-    setShowMarketplaceModal(false);
-    setActiveChannelId('marketplace');
+    try {
+      await fetch('http://localhost:5000/api/chat-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newListing)
+      });
+      setItemTitle('');
+      setItemPrice('');
+      setItemDesc('');
+      setItemImagePreset('none');
+      setShowMarketplaceModal(false);
+    } catch (err) {}
   };
 
   const residentsList = [
@@ -363,9 +305,9 @@ export const SocialConnect: React.FC = () => {
         subtitle="Multi-channel resident chatroom, marketplace, study groups, lost & found"
       />
 
-      {/* Mobile Channel Selector Pills (visible on small/medium screens) */}
+      {/* Mobile Channel Selector Pills */}
       <div className="flex lg:hidden overflow-x-auto gap-2 p-2 bg-white border border-border rounded-xl shadow-soft">
-        {CHANNELS.map(ch => (
+        {channels.map(ch => (
           <button
             key={ch.id}
             onClick={() => setActiveChannelId(ch.id)}
@@ -380,18 +322,16 @@ export const SocialConnect: React.FC = () => {
         ))}
       </div>
 
-      {/* Main Container */}
       <div className="bg-white border border-border rounded-2xl shadow-card overflow-hidden grid grid-cols-1 lg:grid-cols-4 h-[650px] sm:h-[700px]">
         
-        {/* Left Column: Channels & Residents Directory */}
+        {/* Left Column: Channels */}
         <div className="hidden lg:flex flex-col justify-between border-r border-border bg-slate-50/70 p-4 text-xs font-semibold overflow-y-auto">
           
           <div className="space-y-5">
-            {/* Channels Header */}
             <div>
               <span className="text-[10px] font-black text-text-muted uppercase tracking-wider block mb-2">Hostel Channels</span>
               <div className="space-y-1">
-                {CHANNELS.map(ch => (
+                {channels.map(ch => (
                   <button
                     key={ch.id}
                     onClick={() => setActiveChannelId(ch.id)}
@@ -401,7 +341,10 @@ export const SocialConnect: React.FC = () => {
                         : 'text-slate-700 hover:bg-slate-200/60'
                     }`}
                   >
-                    <span className="truncate">{ch.name}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5">{getIcon(ch.iconName)}</div>
+                      <span className="truncate">{ch.name}</span>
+                    </div>
                     {ch.badge && (
                       <span className={`text-[8.5px] px-1.5 py-0.5 rounded font-black uppercase ${
                         activeChannelId === ch.id ? 'bg-white text-primary' : 'bg-primary/10 text-primary'
@@ -414,10 +357,8 @@ export const SocialConnect: React.FC = () => {
               </div>
             </div>
 
-            {/* Resident Search & Active Users */}
             <div className="space-y-2 border-t border-slate-200 pt-4">
               <span className="text-[10px] font-black text-text-muted uppercase tracking-wider block">Resident Directory</span>
-              
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-text-muted absolute left-2.5 top-2.5" />
                 <input
@@ -448,7 +389,6 @@ export const SocialConnect: React.FC = () => {
 
           </div>
 
-          {/* Bottom Community Guidelines */}
           <div className="bg-slate-900 text-white p-3.5 rounded-xl space-y-1.5 border border-slate-800 mt-4">
             <div className="flex gap-1.5 items-center text-warning font-black text-[9px] uppercase tracking-widest">
               <ShieldAlert className="w-3.5 h-3.5" />
@@ -461,10 +401,9 @@ export const SocialConnect: React.FC = () => {
 
         </div>
 
-        {/* Right 3 Columns: Active Chat Area */}
+        {/* Right Chat Area */}
         <div className="lg:col-span-3 flex flex-col justify-between h-full bg-white min-h-0">
           
-          {/* Header Bar */}
           <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-white shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 bg-success rounded-full animate-pulse" />
@@ -476,8 +415,7 @@ export const SocialConnect: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick Actions (e.g. Post for Sale) */}
-            {activeChannelId === 'marketplace' && (
+            {activeChannelId !== 'announcements' && (
               <button
                 onClick={() => setShowMarketplaceModal(true)}
                 className="bg-primary hover:bg-primary-dark text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow transition-colors"
@@ -488,7 +426,6 @@ export const SocialConnect: React.FC = () => {
             )}
           </div>
 
-          {/* Pinned Announcement */}
           {pinnedMessages[activeChannelId] && (
             <div className="bg-primary/5 border-b border-primary/10 px-6 py-2 flex items-center justify-between text-[11px] font-semibold text-slate-700">
               <div className="flex items-center gap-2">
@@ -504,15 +441,12 @@ export const SocialConnect: React.FC = () => {
             </div>
           )}
 
-          {/* Messages Container */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
             {currentMessages.map(msg => (
               <div 
                 key={msg.id}
                 className={`flex gap-3 max-w-[88%] ${msg.isSelf ? 'ml-auto flex-row-reverse' : ''}`}
               >
-                {/* Avatar Icon */}
-                {/* Avatar Icon */}
                 <div 
                   onClick={() => setSelectedResident({ name: msg.senderName, room: msg.roomNo, usn: msg.usn, status: 'Active' })}
                   className={`w-9 h-9 rounded-full border flex items-center justify-center font-black text-xs shrink-0 uppercase shadow-sm cursor-pointer hover:scale-105 transition-transform ${
@@ -524,7 +458,6 @@ export const SocialConnect: React.FC = () => {
                   {msg.senderName.charAt(0)}
                 </div>
 
-                {/* Message Box */}
                 <div className="space-y-1">
                   <div className={`flex items-baseline gap-2 text-[10px] font-bold text-text-muted ${msg.isSelf ? 'justify-end' : ''}`}>
                     <span 
@@ -543,7 +476,6 @@ export const SocialConnect: React.FC = () => {
                       : 'bg-white text-slate-800 border-border rounded-tl-none'
                   }`}>
                     
-                    {/* Marketplace price tag badge */}
                     {msg.price && (
                       <div className="flex items-center justify-between bg-slate-900 text-white p-2 rounded-xl text-xs font-bold mb-1">
                         <div className="flex items-center gap-1.5">
@@ -556,14 +488,12 @@ export const SocialConnect: React.FC = () => {
 
                     <p>{msg.message}</p>
 
-                    {/* Image Preview if present */}
                     {msg.imgUrl && (
                       <div className="rounded-xl overflow-hidden max-w-xs border border-border">
                         <img src={msg.imgUrl} alt="Listing" className="w-full h-36 object-cover" />
                       </div>
                     )}
 
-                    {/* Footer Actions (Like / Upvote / Pin / Interested) */}
                     <div className={`flex items-center justify-between pt-1 border-t border-slate-100 text-[10px] ${msg.isSelf ? 'flex-row-reverse' : ''}`}>
                       <div className="flex items-center gap-2">
                         <button
@@ -608,19 +538,20 @@ export const SocialConnect: React.FC = () => {
             <div ref={chatBottomRef} />
           </div>
 
-          {/* Text Input Footer */}
           <form onSubmit={handleSendMessage} className="h-16 border-t border-border flex items-center px-4 gap-3 bg-white shrink-0">
             <input 
               type="text" 
-              placeholder={`Message #${activeChannel.name}...`}
+              placeholder={activeChannelId === 'announcements' ? "Only Admins can post announcements..." : `Message #${activeChannel.name}...`}
               value={inputText}
               onChange={e => setInputText(e.target.value)}
-              className="flex-1 border border-border rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+              disabled={activeChannelId === 'announcements'}
+              className="flex-1 border border-border rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none disabled:bg-slate-50 disabled:cursor-not-allowed"
             />
             
             <button
               type="submit"
-              className="bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-xl shadow transition-colors flex items-center gap-1.5 font-bold text-xs"
+              disabled={activeChannelId === 'announcements'}
+              className="bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-xl shadow transition-colors flex items-center gap-1.5 font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>Send</span>
               <Send className="w-3.5 h-3.5" />
@@ -631,14 +562,13 @@ export const SocialConnect: React.FC = () => {
 
       </div>
 
-      {/* MODAL: Post Marketplace Item */}
       {showMarketplaceModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-border">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-base font-black text-slate-900">Post Item for Sale / Exchange</h3>
-                <p className="text-xs text-text-muted font-semibold mt-0.5">Visible to all hostel residents in #buy-sell-market</p>
+                <p className="text-xs text-text-muted font-semibold mt-0.5">Visible to all hostel residents in #{activeChannel.name}</p>
               </div>
               <button 
                 onClick={() => setShowMarketplaceModal(false)}
@@ -690,21 +620,6 @@ export const SocialConnect: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Simulated Item Image Preset</label>
-                <select
-                  value={itemImagePreset}
-                  onChange={e => setItemImagePreset(e.target.value)}
-                  className="w-full border border-border rounded-xl p-2.5 font-bold bg-white outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value="none">No Image (Default)</option>
-                  <option value="book">Textbook Image</option>
-                  <option value="kettle">Electric Kettle Image</option>
-                  <option value="chair">Study Chair Image</option>
-                  <option value="cycle">Bicycle Image</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
                 <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Item Description</label>
                 <textarea
                   rows={3}
@@ -727,7 +642,6 @@ export const SocialConnect: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL: Resident Profile Popover */}
       {selectedResident && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-5 shadow-2xl border border-border">
@@ -767,29 +681,17 @@ export const SocialConnect: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            <button
-              onClick={() => {
-                setSelectedResident(null);
-                setActiveChannelId('general');
-                setInputText(`@${selectedResident.name} `);
-              }}
-              className="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs transition-colors"
-            >
-              Mention in Chat
-            </button>
           </div>
         </div>
       )}
 
-      {/* MODAL: Buy inquiry message composer */}
       {interestedItem && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-border">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-base font-black text-slate-900">Express Purchase Interest</h3>
-                <p className="text-xs text-text-muted mt-0.5 font-semibold">An inquiry message will be sent in #buy-sell-market</p>
+                <p className="text-xs text-text-muted mt-0.5 font-semibold">An inquiry message will be sent in #{activeChannel.name}</p>
               </div>
               <button 
                 onClick={() => setInterestedItem(null)}

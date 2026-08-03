@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, ClipboardList, CheckCircle, BedDouble, Users, User, UserCheck, Building } from 'lucide-react';
+import { Loader2, ClipboardList, CheckCircle, BedDouble, Users, User, UserCheck, Building, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function DashboardStats() {
@@ -77,11 +77,10 @@ export default function DashboardStats() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard title="Pending" value={applications.pending} icon={ClipboardList} delay={0.1} href="/applications" accent="secondary" />
-        <StatCard title="Approved" value={applications.approved} icon={CheckCircle} delay={0.2} href="/applications" accent="primary" />
+        <StatCard title="Payment Pending" value={stats.payments?.pending || 0} icon={Wallet} delay={0.2} href="/payments" accent="primary" />
         <StatCard title="Allocated" value={applications.allocated} icon={Users} delay={0.3} href="/applications" accent="primary" />
         
         <StatCard title="Avail Beds" value={beds.available} icon={BedDouble} delay={0.4} href="/occupancy" accent="secondary" />
-        <StatCard title="Total Occupied" value={beds.occupied} icon={Users} delay={0.5} href="/occupancy" accent="primary" />
         <StatCard
   title="Total Blocks"
   value={stats.totalBlocks}

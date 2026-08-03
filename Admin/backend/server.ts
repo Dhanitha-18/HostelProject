@@ -201,7 +201,17 @@ app.post('/api/applications', async (req, res) => {
     motherName: data.motherName || null,
     motherPhone: data.motherPhone || null,
     guardianName: data.guardianName || null,
-    guardianPhone: data.guardianPhone || null
+    guardianPhone: data.guardianPhone || null,
+    quota: data.quota || null,
+    rank: data.rank || null,
+    bloodGroup: data.bloodGroup || null,
+    nationality: data.nationality || null,
+    religion: data.religion || null,
+    aadhaar: data.aadhaar || null,
+    fatherOcc: data.fatherOcc || null,
+    motherOcc: data.motherOcc || null,
+    allergies: data.allergies || null,
+    medication: data.medication || null
   }
 });
 
@@ -1111,12 +1121,14 @@ app.put('/api/applications/batch-status', async (req, res) => {
 // Dashboard Stats
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
-    const [pending, approved, hold, rejected, allocated] = await Promise.all([
+    const [pending, approved, hold, rejected, allocated, paymentPending, paymentCompleted] = await Promise.all([
       prisma.application.count({ where: { status: 'PENDING' } }),
       prisma.application.count({ where: { status: 'APPROVED' } }),
       prisma.application.count({ where: { status: 'HOLD' } }),
       prisma.application.count({ where: { status: 'REJECTED' } }),
-      prisma.application.count({ where: { status: 'ALLOCATED' } })
+      prisma.application.count({ where: { status: 'ALLOCATED' } }),
+      prisma.payment.count({ where: { status: 'PENDING_REVIEW' } }),
+      prisma.payment.count({ where: { status: 'APPROVED' } })
     ]);
 
     const allBeds = await prisma.bed.count();
@@ -1143,6 +1155,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
 
 res.json({
   applications: { pending, approved, hold, rejected, allocated },
+  payments: { pending: paymentPending, completed: paymentCompleted },
   beds: { all: allBeds, occupied: occupiedBeds, available: availableBeds },
   occupancyPercentage,
   maleOccupancy,
@@ -2312,7 +2325,7 @@ app.put('/api/facilities/:id', async (req, res) => {
 // Feedback
 app.get('/api/feedback', async (req, res) => {
   try {
-    const feedback = await prisma.feedback.findMany();
+    const feedback = await prisma.feedback.findMany({ orderBy: { createdAt: 'desc' } });
     res.json(feedback);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch feedback' });
@@ -2321,6 +2334,7 @@ app.get('/api/feedback', async (req, res) => {
 app.post('/api/feedback', async (req, res) => {
   try {
     const feedback = await prisma.feedback.create({ data: req.body });
+    io.emit('data_updated');
     res.json(feedback);
   } catch (error) {
     res.status(500).json({ error: 'Failed to submit feedback' });
@@ -2938,4 +2952,58 @@ app.get('/api/email-history', async (req, res) => {
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+});
+
+
+// --- Social Groups API ---
+app.get('/api/social-groups', async (req, res) => {
+  try {
+    const groups = await prisma.socialGroup.findMany();
+    res.json(groups);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch social groups' });
+  }
+});
+
+app.post('/api/social-groups', async (req, res) => {
+  try {
+    const group = await prisma.socialGroup.create({ data: req.body });
+    io.emit('data_updated');
+    res.json(group);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create social group' });
+  }
+});
+
+app.delete('/api/social-groups/:id', async (req, res) => {
+  try {
+    await prisma.socialGroup.delete({ where: { id: req.params.id } });
+    io.emit('data_updated');
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete social group' });
+  }
+});
+
+// --- Chat Messages API ---
+app.get('/api/chat-messages/:groupId', async (req, res) => {
+  try {
+    const messages = await prisma.chatMessage.findMany({
+      where: { groupId: req.params.groupId },
+      orderBy: { createdAt: 'asc' }
+    });
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch messages' });
+  }
+});
+
+app.post('/api/chat-messages', async (req, res) => {
+  try {
+    const msg = await prisma.chatMessage.create({ data: req.body });
+    io.emit('new_chat_message', msg);
+    res.json(msg);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create message' });
+  }
 });
