@@ -69,20 +69,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({ onMenuToggle }) => {
           <span>{today}</span>
         </div>
 
-        {/* Admin Portal Link */}
-        <a
-          href={ADMIN_PORTAL_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden sm:flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-[10px] py-1.5 px-3 rounded-lg border border-border transition-all uppercase tracking-wider cursor-pointer"
-          title="Open Admin Portal"
-        >
-          <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-          <span>Admin</span>
-          <ExternalLink className="w-3 h-3" />
-        </a>
-
-        {/* Student Login Button (Beside Admin) */}
+        {/* Student Login Button */}
         {!isLoggedIn ? (
           <button
             onClick={() => navigate('/login')}

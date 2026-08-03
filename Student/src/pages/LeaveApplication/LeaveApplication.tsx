@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { usePayment } from '../../context/PaymentContext';
 import { HeroBanner } from '../../components/layout/HeroBanner';
+import { LEAVE_HERO_IMAGE } from '../../assets/heroBanners';
 import { 
   Calendar as CalendarIcon, Clock, CheckCircle2, AlertCircle, LogOut, 
   FileText, Upload, Trash2, ArrowLeft, ArrowRight, QrCode, X, 
@@ -451,7 +452,7 @@ export const LeaveApplication: React.FC = () => {
 
       {/* Hero Banner */}
       <HeroBanner 
-        image="/facilities/hero2.png"
+        image={LEAVE_HERO_IMAGE}
         title="Hostel Leave & Checkout Portal"
         subtitle="Submit outpass applications, track warden approvals, view QR return passes, and manage permanent exit clearances"
       />
@@ -678,7 +679,7 @@ export const LeaveApplication: React.FC = () => {
                           className="w-full border border-border rounded-xl p-2.5 text-xs font-bold outline-none bg-white"
                         >
                           {['05:00 PM', '06:00 PM', '07:00 PM', '07:30 PM', '08:00 PM', '08:30 PM', '09:00 PM'].map(t => (
-                            <option key={t} value={t}>{t} (Curfew Deadline)</option>
+                            <option key={t} value={t}>{t}</option>
                           ))}
                         </select>
                       </div>
@@ -885,7 +886,7 @@ export const LeaveApplication: React.FC = () => {
                           className="w-4 h-4 text-primary rounded border-border focus:ring-primary mt-0.5"
                         />
                         <span className="text-[11px] text-slate-800 font-semibold leading-relaxed">
-                          <strong>Mandatory Resident Declaration:</strong> I hereby confirm that all leave details provided above are accurate. I undertake to return to the hostel prior to the specified curfew return time of <strong>{expectedReturnTime}</strong> on <strong>{toDate}</strong>.
+                          <strong>Mandatory Resident Declaration:</strong> I hereby confirm that all leave details provided above are accurate. I undertake to return to the hostel prior to the specified return time of <strong>{expectedReturnTime}</strong> on <strong>{toDate}</strong>.
                         </span>
                       </label>
                     </div>
@@ -1398,7 +1399,7 @@ export const LeaveApplication: React.FC = () => {
 
             <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-xs text-slate-700 font-bold space-y-1">
               <div>Expected Review Time: <strong>Within 2 Hours</strong></div>
-              <div>Curfew Gate Return: <strong>07:30 PM</strong></div>
+              <div>Expected Gate Return: <strong>07:30 PM</strong></div>
             </div>
 
             <button
@@ -1477,7 +1478,7 @@ export const LeaveApplication: React.FC = () => {
                   <span>{inspectLeave.destination}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-bold">Curfew Return</span>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold">Expected Return</span>
                   <span className="text-amber-400 font-bold">{inspectLeave.expectedReturnTime} ({inspectLeave.toDate})</span>
                 </div>
               </div>
