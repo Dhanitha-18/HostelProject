@@ -10,9 +10,9 @@ import './App.css'; // keeps Vite structure intact
 const queryClient = new QueryClient();
 
 function App() {
-  useEffect(() => {
-    initSocket();
-  }, []);
+  // useEffect(() => {
+  //   initSocket();
+  // }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
