@@ -512,6 +512,30 @@ export default function StudentDatabase() {
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.phoneNumber)}</p>
                                         </div>
                                         <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Aadhaar Number</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.aadhaar)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Quota</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.quota)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Entrance Rank</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.rank)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Blood Group</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.bloodGroup)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Nationality</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.nationality)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Religion</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.religion)}</p>
+                                        </div>
+                                        <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Gender</p>
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.gender)}</p>
                                         </div>
@@ -551,6 +575,10 @@ export default function StudentDatabase() {
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.fatherEmail)}</p>
                                         </div>
                                         <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Father Occupation</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.fatherOcc)}</p>
+                                        </div>
+                                        <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Mother Name</p>
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.motherName)}</p>
                                         </div>
@@ -561,6 +589,10 @@ export default function StudentDatabase() {
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Mother Email</p>
                                           <p className="text-sm font-semibold text-slate-800">{displayVal(app.motherEmail)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Mother Occupation</p>
+                                          <p className="text-sm font-semibold text-slate-800">{displayVal(app.motherOcc)}</p>
                                         </div>
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Guardian Name</p>
@@ -592,6 +624,14 @@ export default function StudentDatabase() {
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Medical Information</p>
                                           <p className="text-sm font-semibold text-slate-800 whitespace-normal">{displayVal(app.medicalInfo)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Allergies</p>
+                                          <p className="text-sm font-semibold text-slate-800 whitespace-normal">{displayVal(app.allergies)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                          <p className="text-xs font-bold text-slate-500 uppercase">Medication</p>
+                                          <p className="text-sm font-semibold text-slate-800 whitespace-normal">{displayVal(app.medication)}</p>
                                         </div>
                                         <div className="space-y-1">
                                           <p className="text-xs font-bold text-slate-500 uppercase">Remarks</p>
